@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #ecfdf6;
+  --color-brand-100: #d1faec;
+  --color-brand-200: #a6f3d8;
+  --color-brand-300: #6fe6c0;
+  --color-brand-400: #34d1a3;
+  --color-brand-500: #0fb487;
+  --color-brand-600: #0b926f;
+  --color-brand-700: #0b6e4f;
+  --color-brand-800: #0c5741;
+  --color-brand-900: #0b4736;
+
+  --color-accent-400: #f59e0b;
+  --color-accent-500: #d97706;
+
+  --font-sans: "Inter", "Noto Kufi Arabic", ui-sans-serif, system-ui, sans-serif;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+}
+
+/* Material-inspired surface */
+.card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+.btn-primary {
+  @apply btn bg-brand-700 text-white hover:bg-brand-800;
+}
+.btn-outline {
+  @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+}
+.btn-ghost {
+  @apply btn text-slate-600 hover:bg-slate-100;
+}
+.btn-danger {
+  @apply btn bg-red-600 text-white hover:bg-red-700;
+}
+
+.input {
+  @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+}
+.label {
+  @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
