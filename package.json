@@ -1,0 +1,20 @@
+{
+  "name": "wishubest",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WishUBest — international medical tourism marketplace (MVP)",
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r --workspace-concurrency=1 build",
+    "dev": "pnpm -r --parallel dev",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r --workspace-concurrency=1 test",
+    "db:migrate": "pnpm --filter @wishubest/api db:migrate",
+    "db:seed": "pnpm --filter @wishubest/api db:seed"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@wishubest/config",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "files": ["tsconfig.base.json", "eslint.config.js"],
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./eslint.config.js": "./eslint.config.js"
+  },
+  "devDependencies": {
+    "eslint": "^9.28.0",
+    "typescript-eslint": "^8.33.0",
+    "eslint-config-prettier": "^10.1.5"
+  }
+}
