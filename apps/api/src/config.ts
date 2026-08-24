@@ -17,6 +17,9 @@ const envSchema = z.object({
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   PAYMENT_CURRENCY_FALLBACK: z.string().length(3).default("USD"),
+  /** Test-only: enables a signed internal payment simulator when Stripe keys are absent. */
+  E2E_PAYMENT_MODE: z.string().optional(),
+  E2E_WEBHOOK_SECRET: z.string().optional(),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().int().optional(),
   SMTP_USER: z.string().optional(),

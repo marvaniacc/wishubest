@@ -21,6 +21,7 @@ import { requireRole, requireAuth } from "../lib/sessions.js";
 import { newBookingCode, bookingExpiryDate, expireStaleBookings } from "../lib/bookings.js";
 import { getActiveCurrency } from "../lib/invoices.js";
 import { gateway } from "../lib/payments/stripe.js";
+import { simulatedModeEnabled, createSimulatedCheckout } from "../lib/payments/simulate.js";
 import { mails } from "../lib/mailer.js";
 import { env } from "../config.js";
 
@@ -276,6 +277,14 @@ export async function registerPatientRoutes(app: FastifyInstance) {
     async (req, reply) => {
       const { id } = z.object({ id: z.string().uuid() }).parse(req.params);
       const gw = gateway();
+
+      // Test-only simulated checkout (env-gated; never active with real keys).
+      if (!gw && simulatedModeEnabled()) {
+        const url = await createSimulatedCheckout(id);
+        if (!url) return reply.code(404).send({ error: "not_found" });
+        return { checkoutUrl: `${env().APP_URL.replace(/\/$/, "")}${url}`, simulated: true };
+      }
+
       if (!gw) return reply.code(503).send({ error: "payments_not_configured" });
 
       const invRows = await db().db

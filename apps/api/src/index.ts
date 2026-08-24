@@ -83,14 +83,16 @@ export async function buildServer(opts: { logger?: boolean } = {}) {
   return app;
 }
 
-if (process.argv[1] && process.argv[1].endsWith("index.js")) {
+const entryArg = (process.argv[1] ?? "").replace(/\\/g, "/");
+if (/\/(dist\/)?index\.(js|ts|mjs)$/.test(entryArg)) {
   const e = env();
+  const port = Number(process.env.PORT ?? 4000);
   buildServer()
     .then(async (app) => {
       const { startExpirySweeper } = await import("./lib/bookings.js");
       startExpirySweeper();
-      await app.listen({ port: 4000, host: "127.0.0.1" });
-      console.log(`API listening on ${e.API_URL}`);
+      await app.listen({ port, host: "127.0.0.1" });
+      console.log(`API listening on ${e.API_URL} (port ${port})`);
     })
     .catch((err) => {
       console.error(err);
