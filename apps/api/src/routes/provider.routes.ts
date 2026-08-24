@@ -345,7 +345,7 @@ export async function registerProviderRoutes(app: FastifyInstance) {
         and(
           eq(serviceSlots.providerId, p.id),
           ne(serviceSlots.status, "cancelled"),
-          sql`tsrange(${serviceSlots.startsAt}, ${serviceSlots.endsAt}) && tsrange(${startsAt.toISOString()}::timestamptz, ${endsAt.toISOString()}::timestamptz)`,
+          sql`tstzrange(${serviceSlots.startsAt}, ${serviceSlots.endsAt}) && tstzrange(${startsAt.toISOString()}::timestamptz, ${endsAt.toISOString()}::timestamptz)`,
         ),
       )
       .limit(1);
