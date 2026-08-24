@@ -1,6 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALES, DEFAULT_LOCALE } from "./i18n/config";
 
+/**
+ * Origin reconstruction behind proxies (Cloudflare -> Caddy -> Next):
+ * prefer forwarded headers; never trust nextUrl.host, which reflects the
+ * internal hop (e.g. localhost:3000) rather than the public site.
+ */
+function siteOrigin(req: NextRequest): string {
+  const fwdHost = req.headers.get("x-forwarded-host");
+  const host = (fwdHost ?? req.headers.get("host") ?? "").split(",")[0]!.trim();
+  const proto =
+    req.headers.get("x-forwarded-proto")?.split(",")[0]!.trim() ||
+    new URL(req.url).protocol.replace(":", "");
+  return `${proto}://${host || "wishubest.com"}`;
+}
+
 function pickLocale(req: NextRequest): string {
   const cookie = req.cookies.get("wub_locale")?.value;
   if (cookie && (LOCALES as readonly string[]).includes(cookie)) return cookie;
@@ -16,9 +30,8 @@ export function middleware(req: NextRequest) {
   );
   if (!hasLocale) {
     const locale = pickLocale(req);
-    const url = req.nextUrl.clone();
-    url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
-    return NextResponse.redirect(url);
+    const target = `${siteOrigin(req)}/${locale}${pathname === "/" ? "" : pathname}`;
+    return NextResponse.redirect(target);
   }
   return NextResponse.next();
 }
