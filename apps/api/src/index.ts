@@ -31,6 +31,13 @@ export async function buildServer(opts: { logger?: boolean } = {}) {
   await app.register(multipart, {
     limits: { fileSize: 10 * 1024 * 1024, files: 1 },
   });
+
+  // Raw string body for form-urlencoded (used by the test-only payment simulator).
+  app.addContentTypeParser(
+    "application/x-www-form-urlencoded",
+    { parseAs: "string" },
+    (_req, body, done) => done(null, body),
+  );
   await app.register(rateLimit, {
     max: 300,
     timeWindow: "1 minute",

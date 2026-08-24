@@ -30,8 +30,8 @@ export default defineConfig({
         `APP_URL=http://127.0.0.1:${PORT} ` +
         "NODE_ENV=test " +
         "E2E_PAYMENT_MODE=simulated E2E_WEBHOOK_SECRET=whsec_test_secret " +
-        "REVALIDATE_TOKEN=e2e-token " +
-        "npx tsx /opt/wishubest/apps/api/src/index.ts",
+        "REVALIDATE_TOKEN=e2e-token LOG_PROXY=1 LOG_CSRF=1 " +
+        "npx tsx /opt/wishubest/apps/api/src/index.ts > /tmp/opencode/e2e-api.log 2>&1",
       port: API_PORT,
       reuseExistingServer: false,
       timeout: 30_000,
@@ -41,7 +41,7 @@ export default defineConfig({
       command:
         `API_URL=http://127.0.0.1:${API_PORT} ` +
         `APP_URL=http://127.0.0.1:${PORT} ` +
-        "REVALIDATE_TOKEN=e2e-token " +
+        "REVALIDATE_TOKEN=e2e-token LOG_PROXY=1 LOG_CSRF=1 " +
         `npx next start -p ${PORT}`,
       port: PORT,
       reuseExistingServer: false,

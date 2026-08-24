@@ -81,8 +81,8 @@ export default function BookingForm({
       <p className="text-sm font-semibold">{serviceTitle}</p>
       {slots.length > 0 && (
         <div>
-          <label className="form-label">{t("Available slots", "المواعيد المتاحة")}</label>
-          <select value={slotId} onChange={(e) => setSlotId((e.target as HTMLSelectElement).value)} className="input">
+          <label className="form-label" htmlFor="bk-slot">{t("Available slots", "المواعيد المتاحة")}</label>
+          <select id="bk-slot" value={slotId} onChange={(e) => setSlotId((e.target as HTMLSelectElement).value)} className="input">
             <option value="">{t("— pick a slot —", "— اختر موعداً —")}</option>
             {slots.slice(0, 30).map((s) => (
               <option key={s.id} value={s.id}>
@@ -99,8 +99,9 @@ export default function BookingForm({
       )}
       {slots.length === 0 && (
         <div>
-          <label className="form-label">{t("Preferred date & time", "التاريخ والوقت المفضل")}</label>
+          <label className="form-label" htmlFor="bk-time">{t("Preferred date & time", "التاريخ والوقت المفضل")}</label>
           <input
+            id="bk-time"
             type="datetime-local"
             value={scheduledAt}
             onChange={(e) => setScheduledAt((e.target as HTMLInputElement).value)}
@@ -111,8 +112,9 @@ export default function BookingForm({
         </div>
       )}
       <div>
-        <label className="form-label">{t("Notes for the provider", "ملاحظات لمقدم الخدمة")}</label>
+        <label className="form-label" htmlFor="bk-note">{t("Notes for the provider", "ملاحظات لمقدم الخدمة")}</label>
         <textarea
+          id="bk-note"
           value={note}
           onChange={(e) => setNote((e.target as HTMLTextAreaElement).value)}
           rows={3}

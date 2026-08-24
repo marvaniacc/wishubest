@@ -52,6 +52,19 @@ function registerSimulatedPaymentRoutes(app: FastifyInstance) {
     if (!res.ok) return reply.code(res.status).send({ error: "forbidden" });
     const pay = await findSimulatedPayment(ref);
     if (!pay) return reply.code(404).send({ error: "not_found" });
+    const backUrl = `${process.env.APP_URL ?? ""}/en/dashboard/bookings?paid=1`;
+    if (pay.status === "SUCCEEDED") {
+      return reply
+        .header("content-type", "text/html; charset=utf-8")
+        .header("cache-control", "no-store")
+        .send(
+          `<!doctype html><html><head><meta http-equiv="refresh" content="1.2;url=${backUrl}"><title>Paid — ${pay.number}</title></head>
+<body style="display:grid;place-items:center;min-height:90vh;background:#F5F6F2;font-family:sans-serif">
+<div style="text-align:center"><h1 style="color:#3F7D58">Payment succeeded ✓</h1>
+<p>Invoice ${pay.number} — ${(pay.amountMinor / 100).toFixed(2)}</p>
+<p style="color:#4B5A56;font-size:13px">Redirecting…</p></div></body></html>`,
+        );
+    }
     return reply
       .header("content-type", "text/html; charset=utf-8")
       .header("cache-control", "no-store")
@@ -62,27 +75,30 @@ function registerSimulatedPaymentRoutes(app: FastifyInstance) {
 <p style="color:#4B5A56;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-top:0">TEST MODE — simulated gateway</p>
 <h2 style="color:#0E4F4A">Invoice ${pay.number}</h2>
 <p style="font-size:28px;font-weight:700;color:#16211E">${(pay.amountMinor / 100).toFixed(2)}</p>
-<form method="post"><input type="hidden" name="token" value="${q.token}" />
-<button type="submit" style="background:#C98A3E;color:#fff;border:none;border-radius:6px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer">Pay now</button>
-</form></div></body></html>`,
+<button id="pay" type="button" style="background:#C98A3E;color:#fff;border:none;border-radius:6px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer">Pay now</button>
+<script>
+document.getElementById("pay").addEventListener("click", function () {
+  var m = document.cookie.match(/(?:^|; )wub_csrf=([^;]*)/);
+  var btn = document.getElementById("pay");
+  btn.disabled = true;
+  fetch(window.location.pathname + window.location.search, {
+    method: "POST",
+    headers: { "x-csrf-token": m ? decodeURIComponent(m[1]) : "" }
+  }).then(function (r) {
+    if (r.ok) { location.reload(); }
+    else { r.text().then(function (t) { btn.textContent = "Error " + t.slice(0, 120); btn.disabled = false; }); }
+  });
+});
+</script>
+</div></body></html>`,
       );
   });
 
   app.post("/payments/simulate/:ref", async (req, reply) => {
     if (!simulatedModeEnabled()) return reply.code(404).send({ error: "not_found" });
     const { ref } = simParams.parse(req.params);
-    let token = "";
-    if ((req.headers["content-type"] ?? "").startsWith("application/x-www-form-urlencoded")) {
-      const body = await new Promise<string>((resolve) => {
-        let data = "";
-        req.raw.on("data", (c) => (data += c));
-        req.raw.on("end", () => resolve(data));
-      });
-      token = String(new URLSearchParams(body).get("token") ?? "");
-    } else {
-      token = String((req.body as Record<string, unknown> | undefined)?.token ?? "");
-    }
-    const res = await handleSimulate(ref, token, true);
+    const q = simQuery.parse(req.query);
+    const res = await handleSimulate(ref, q.token, true);
     if (!res.ok) return reply.code(res.status).send({ error: "forbidden" });
     const pay = await findSimulatedPayment(ref);
     const url = `${process.env.APP_URL ?? ""}/en/dashboard/bookings?paid=1`;

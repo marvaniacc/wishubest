@@ -12,13 +12,14 @@ export async function apiCall<T = unknown>(
 ): Promise<{ ok: boolean; status: number; data: T }> {
   const method = opts.method ?? "POST";
   const csrf = readCookie("wub_csrf");
+  const hasBody = opts.body !== undefined;
   const res = await fetch(`/api${path}`, {
     method,
     headers: {
-      "content-type": "application/json",
+      ...(hasBody ? { "content-type": "application/json" } : {}),
       ...(csrf ? { "x-csrf-token": csrf } : {}),
     },
-    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+    body: hasBody ? JSON.stringify(opts.body) : undefined,
   });
   let data: unknown = null;
   try {

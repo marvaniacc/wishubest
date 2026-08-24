@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { apiFetch } from "@/lib/api-server";
 import { getDictionary, type Locale } from "@/i18n/config";
+import LogoutButton from "./LogoutButton";
 
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const d = getDictionary(locale);
@@ -40,7 +41,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               >
                 {d.nav.dashboard}
               </Link>
-              <LogoutButton label={d.nav.logout} />
+              <LogoutButton label={d.nav.logout} locale={locale} />
             </>
           ) : (
             <>
@@ -73,30 +74,3 @@ function LocaleSwitch({ locale }: { locale: Locale }) {
     </a>
   );
 }
-
-function LogoutButton({ label }: { label: string }) {
-  return (
-    <form action="/api/auth/logout" method="post" className="contents">
-      {/* logout posts through the proxy; CSRF header added by JS below */}
-      <button
-        type="submit"
-        onClick={(e) => {
-          e.preventDefault();
-          void (async () => {
-            const csrf = document.cookie.match(/(?:^|; )wub_csrf=([^;]*)/)?.[1];
-            await fetch("/api/auth/logout", {
-              method: "POST",
-              headers: csrf ? { "x-csrf-token": decodeURIComponent(csrf) } : undefined,
-            });
-            window.location.href = "/";
-          })();
-        }}
-        className="rounded-md px-3 py-2 text-ink-soft hover:bg-danger-tint hover:text-danger"
-      >
-        {label}
-      </button>
-    </form>
-  );
-}
-
-

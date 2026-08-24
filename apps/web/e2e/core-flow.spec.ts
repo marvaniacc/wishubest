@@ -21,6 +21,23 @@ async function logout(page: import("@playwright/test").Page) {
 }
 
 test("booking → payment core flow", async ({ page }) => {
+  // ---------- admin seeds geography ----------
+  await page.goto("/en/login");
+  await page.getByLabel("Email").fill(ADMIN.email);
+  await page.getByLabel("Password").fill(ADMIN.password);
+  await page.getByRole("button", { name: /log in/i }).click();
+  await expect(page).toHaveURL(/dashboard/);
+  await page.goto("/en/dashboard/admin/geography");
+  await page.getByPlaceholder("Name (EN)").first().fill("Testland");
+  await page.getByPlaceholder("ISO2 (e.g. TH)").fill("TS");
+  await page.locator("section", { hasText: "Countries" }).getByRole("button").click();
+  const countrySelect = page.locator("section", { hasText: "Cities" }).locator("select");
+  const countryValue = await countrySelect.locator("option", { hasText: "Testland" }).getAttribute("value");
+  await countrySelect.selectOption(countryValue!);
+  await page.getByPlaceholder("City (EN)").fill("Harborville");
+  await page.locator("section", { hasText: "Cities" }).getByRole("button").click();
+  await logout(page);
+
   // ---------- provider registers ----------
   await page.goto("/en/register");
   await page.getByLabel("Full name").fill("Dr E2E");
@@ -33,8 +50,13 @@ test("booking → payment core flow", async ({ page }) => {
   // create profile
   await page.goto("/en/dashboard/profile");
   await page.getByLabel("Display name").fill("Dr E2E Cardiology");
+  await page.getByLabel("Country").selectOption({ label: "Testland" });
   await page.getByLabel("Address line", { exact: false }).fill("1 Harbor Road");
-  await page.getByRole("button", { name: /^Save$/ }).click();
+  const [saveRes] = await Promise.all([
+    page.waitForResponse((r) => r.url().includes("/api/provider/profile")),
+    page.getByRole("button", { name: /^Save$/ }).click(),
+  ]);
+  if (!saveRes.ok()) throw new Error(`profile save failed: ${saveRes.status()} ${await saveRes.text()}`);
 
   // create an active online service
   await page.goto("/en/dashboard/services");
@@ -45,7 +67,15 @@ test("booking → payment core flow", async ({ page }) => {
   await page.getByLabel("Status").selectOption("active");
   await page.locator("form").getByRole("button", { name: /^Save$/ }).click();
 
-  // submit for review via API-backed UI: KYC doc upload first
+  // submit profile for admin review
+  await page.goto("/en/dashboard/profile");
+  const [subRes] = await Promise.all([
+    page.waitForResponse((r) => r.url().includes("/api/provider/submit-for-review")),
+    page.getByRole("button", { name: /submit for review/i }).click(),
+  ]);
+  if (!subRes.ok()) throw new Error(`submit-for-review failed: ${subRes.status()} ${await subRes.text()}`);
+
+  // KYC doc upload
   await page.goto("/en/dashboard/kyc");
   const png = Buffer.from(
     "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789c6360000002000148afa4710000000049454e44ae426082",
@@ -97,7 +127,7 @@ test("booking → payment core flow", async ({ page }) => {
 
   // find booking in patient dashboard
   await page.goto("/en/dashboard/bookings");
-  await expect(page.getByText("REQUESTED")).toBeVisible();
+  await expect(page.getByText("Requested")).toBeVisible();
   await logout(page);
 
   // ---------- provider confirms ----------
@@ -108,7 +138,7 @@ test("booking → payment core flow", async ({ page }) => {
   await expect(page).toHaveURL(/dashboard/);
   await page.goto("/en/dashboard/bookings");
   await page.getByRole("button", { name: /confirm/i }).first().click();
-  await expect(page.getByText("AWAITING_PAYMENT")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Awaiting payment")).toBeVisible({ timeout: 15_000 });
   await logout(page);
 
   // ---------- patient pays ----------
@@ -120,6 +150,8 @@ test("booking → payment core flow", async ({ page }) => {
   await page.goto("/en/dashboard/bookings");
 
   await page.getByRole("link", { name: /pay now/i }).first().click();
+  await expect(page).toHaveURL(/dashboard\/invoices\//, { timeout: 20_000 });
+  await page.getByRole("button", { name: /pay now/i }).click();
   await expect(page).toHaveURL(/payments\/simulate/, { timeout: 20_000 });
   await page.getByRole("button", { name: /pay now/i }).click();
   await expect(page.getByText(/payment succeeded/i)).toBeVisible({ timeout: 20_000 });
@@ -127,5 +159,5 @@ test("booking → payment core flow", async ({ page }) => {
   // back to bookings — status must be CONFIRMED after webhook-driven transition
   await page.waitForURL(/dashboard\/bookings/, { timeout: 20_000 });
   await page.goto("/en/dashboard/bookings");
-  await expect(page.getByText("CONFIRMED")).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText("Confirmed", { exact: true })).toBeVisible({ timeout: 20_000 });
 });

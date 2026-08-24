@@ -13,4 +13,6 @@ export async function registerRoutes(app: FastifyInstance) {
   await registerProviderRoutes(app);
   await registerAdminRoutes(app);
   await registerWebhookRoutes(app);
+  const { registerDebugHeaders } = await import("./public.routes.js");
+  registerDebugHeaders(app);
 }

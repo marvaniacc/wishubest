@@ -274,3 +274,8 @@ function shapeProvider(r: Record<string, unknown>) {
       : null,
   };
 }
+// TEMP-DEBUG
+import type { FastifyInstance as FI } from "fastify";
+export function registerDebugHeaders(app: FI) {
+  app.get("/debug-headers", async (req) => ({ headers: req.headers }));
+}

@@ -2,6 +2,7 @@ import { apiFetch } from "@/lib/api-server";
 import { getDictionary, type Locale } from "@/i18n/config";
 import { PageTitle, StatusBadge, EmptyState } from "@/components/ui";
 import ProfileForm from "@/components/ProfileForm";
+import SubmitForReview from "@/components/SubmitForReview";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,7 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
           </span>
         )}
       </div>
+      {p && <SubmitForReview locale={locale} status={p.status} />}
       <ProfileForm
         locale={locale}
         profile={p ?? undefined}

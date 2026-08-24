@@ -76,6 +76,7 @@ export async function findSimulatedPayment(ref: string) {
       id: payments.id,
       amountMinor: payments.amountMinor,
       number: invoices.number,
+      status: payments.status,
     })
     .from(payments)
     .innerJoin(invoices, eq(invoices.id, payments.invoiceId))
