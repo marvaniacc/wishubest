@@ -1,45 +1,45 @@
-# ADR-0001: Technology and provider direction
+# ADR-0001: Laravel/Livewire modular monolith and provider boundaries
 
-- **Status:** Open
+- **Status:** Accepted
 - **Date:** 2026-09-06
-- **Owners:** Product and engineering owners to be assigned
+- **Owners:** Engineering and product owners
 - **Related:** [Architecture](../ARCHITECTURE.md), [Technical specification](../TECHNICAL-SPECIFICATION.md), [Roadmap](../ROADMAP.md)
 
 ## Context
 
-WishUBest is a multilingual doctor discovery, appointment booking, and medical consultation platform. It needs a web application direction, a relational datastore, and eventual integrations for video, realtime communication, translation, payments, hosting, cloud operations, storage, messaging, and email/SMS.
+WishUBest needs crawlable multilingual public doctor pages, secure patient/doctor dashboards, policy-based authorization, appointment scheduling, background work, accessibility, and low MVP operational complexity.
 
 ## Problem
 
-Selecting technology or providers before the medical/legal, patient-data, scheduling, translation, SEO, and commercial requirements are defined risks avoidable lock-in and unsafe assumptions. Leaving all direction implicit risks inconsistent implementation.
+The application needs an implementation architecture now. An SPA/API split, microservices, Kubernetes, or provider-specific domain logic would add delivery, security, SEO, localization, and operations cost without an MVP requirement.
 
 ## Options
 
-1. Accept Laravel/PHP with Livewire and select providers immediately.
-2. Evaluate Laravel/PHP with Livewire as a candidate; evaluate PostgreSQL and MySQL against documented appointment, directory, operational, and privacy criteria; defer provider selections until requirements and evaluation criteria are accepted.
-3. Begin application implementation without a documented direction.
+1. Laravel/PHP with Livewire in a server-rendered modular monolith.
+2. Laravel with a separate SPA/API.
+3. Microservices or a plugin-led/WordPress core.
 
 ## Decision
 
-Choose option 2. Laravel/PHP with Livewire is an evaluated candidate only. PostgreSQL and MySQL remain open for comparison. Video, realtime, translation, payments, hosting, cloud, storage, messaging, and email/SMS providers remain explicitly open.
+Accept option 1: Laravel/PHP + Livewire, implemented as a server-rendered modular monolith. Use Laravel policies, queues, scheduler, localization catalogs, and testing; isolate external vendor protocols behind application-owned adapters. Do not select video, realtime, translation, payment, storage, email, hosting, or cloud vendors in this ADR.
 
 ## Reasoning
 
-Doctor discovery, scheduling, private communication, medical translation, international SEO, payments, and privacy obligations materially influence technology selection. Documentation-first evaluation establishes integration boundaries without claiming a provider or implementation decision.
+It directly supports SSR/SEO, accessible HTML, one authorization/validation model, multilingual rendering, jobs, dashboards, and a maintainable low-cost deployment. It preserves later exits because domain rules and adapter contracts are independent of UI and vendor SDKs.
 
 ## Consequences
 
 ### Positive
 
-- Avoids premature framework and vendor lock-in.
-- Makes patient-data, scheduling, localization, SEO, and operational evaluation factors explicit.
-- Preserves portability through application-owned integration boundaries.
+- A direct, testable implementation path for the first vertical slice.
+- No duplicated frontend/backend auth or rendering concerns.
+- Provider selection can be deferred without blocking domain implementation.
 
 ### Negative / risks
 
-- Delays application scaffolding until decision gates are complete.
-- Requires disciplined documentation updates and accountable decision owners.
+- The team must maintain Laravel/PHP competence.
+- Rich realtime behavior remains an adapter concern and is intentionally not assumed for MVP.
 
 ### Follow-up
 
-Define candidate sets, measurable criteria, owners, and acceptance gates. Record accepted, deferred, or superseding outcomes in subsequent ADRs before implementation.
+Implement the modular boundaries and ADR-record any material provider choice when it is required. Revisit separate clients or services only with demonstrated need.

@@ -1,21 +1,17 @@
-# ADR-0002: Prefer PostgreSQL for the initial relational database
+# ADR-0002: PostgreSQL as the MVP relational database
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-09-06
-- **Owners:** Engineering and product owners to be assigned
+- **Owners:** Engineering and product owners
 - **Related:** [Architecture](../ARCHITECTURE.md), [Domain model](../DOMAIN-MODEL.md), [Technical specification](../TECHNICAL-SPECIFICATION.md)
 
 ## Context
 
-Appointments need reliable concurrent booking, directory filtering, transactional payment/booking facts, audits, and future reporting. Laravel supports both PostgreSQL and MySQL. No schema or managed service has been selected.
+WishUBest requires correct concurrent booking, relational appointment/audit data, directory filtering, reporting-ready indexes, Laravel support, and simple managed operations.
 
 ## Problem
 
-The initial relational database must optimize correctness and operational simplicity without prematurely introducing a search platform or database-specific coupling.
-
-## Requirements
-
-Correct transactional scheduling; relational integrity; indexing and JSON support; Laravel compatibility; backups/recovery/monitoring; manageable cost; team operability; and a credible exit path.
+The primary relational store must prevent double booking and retain integrity without adding a separate search or distributed data platform.
 
 ## Options
 
@@ -23,50 +19,27 @@ Correct transactional scheduling; relational integrity; indexing and JSON suppor
 2. MySQL.
 3. A non-relational primary store.
 
-## Advantages
-
-PostgreSQL offers strong transactional and indexing capabilities suited to scheduling and relational reporting. MySQL has broad familiarity and managed availability. Both keep the Laravel path simple.
-
-## Disadvantages
-
-PostgreSQL may be less familiar or costlier in some managed environments. MySQL requires equally careful locking/transaction design for booking correctness. A non-relational primary store complicates relational appointment integrity and is not suitable for the initial core.
-
-## Operational implications
-
-Compare candidate managed offerings for region, backup restore testing, monitoring, high availability, worker connectivity, cost, and operator familiarity before acceptance.
-
-## Security implications
-
-Use least-privilege database access, encrypted connections, protected backups, audit-safe logs, and tested recovery regardless of engine. Engine selection does not satisfy patient-data obligations.
-
-## Scalability implications
-
-Use measured indexes and bounded availability queries first. Keep search abstraction separate so full-text or dedicated search can be introduced only when evidence warrants it.
-
-## Cost and complexity implications
-
-A single managed relational database minimizes MVP infrastructure. A second store or premature search cluster adds operations without proven need.
-
 ## Decision
 
-Recommend PostgreSQL for the initial relational database, subject to managed-service and team-operability validation.
+Accept PostgreSQL for the MVP. Use a managed deployment with encrypted connections, least-privilege access, backup/restore testing, monitoring, and cost review. Use relational constraints, transactions, and a PostgreSQL-appropriate active interval overlap-prevention strategy for appointment/hold correctness.
 
 ## Reasoning
 
-Its transactional, indexing, and JSON capabilities provide a strong fit for correct appointment booking and a growing multilingual directory while retaining a simple Laravel-supported architecture.
-
-## Why this fits WishUBest
-
-WishUBest must favor appointment correctness, secure relational records, SEO-facing directory queries, and low operational complexity over fashionable infrastructure.
+PostgreSQL offers strong transactional semantics, expressive constraints/indexing, JSON support, and Laravel compatibility. It fits atomic booking holds, directory filtering, and reporting while retaining a single-store operational model. MySQL is credible but does not outweigh the scheduling correctness and constraint fit for this MVP.
 
 ## Consequences
 
-If accepted, booking concurrency design may use PostgreSQL-appropriate constraints and transactions, while repository/query boundaries preserve a future exit path. MySQL remains the fallback if validated operations, cost, or team evidence outweighs the recommendation.
+### Positive
 
-## Rejected alternatives
+- One relational source of truth with enforceable booking integrity.
+- No premature search platform or multi-store synchronization.
+- Strong foundation for audit and directory queries.
 
-A non-relational primary database is rejected for MVP because it weakens the simplest path to relational appointment and audit correctness. A dedicated search system is deferred because MVP filters do not justify its operational cost.
+### Negative / risks
 
-## Future migration and exit implications
+- Operators need PostgreSQL familiarity and managed-service discipline.
+- Engine-specific overlap enforcement must be isolated and covered by tests.
 
-Avoid unneeded engine-specific behavior, export/backup test data regularly, and isolate persistence/query access. A later migration requires tested data reconciliation and booking downtime/dual-write planning; it is not assumed to be free.
+### Follow-up
+
+Benchmark the contested-slot path, test restores, and keep query boundaries portable. Any future engine migration requires a dedicated migration plan and ADR.

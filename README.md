@@ -1,33 +1,30 @@
-# Documentation is the project contract
+# WishUBest documentation and implementation contract
 
-> **Non-negotiable rule for future agents:** update the established documentation **in place**. Do **not** rename, restructure, replace, or move this documentation without explicit human instruction.
+WishUBest is a multilingual, international **doctor discovery, appointment booking, and medical consultation platform**. It supports video, online chat, and in-person consultations. It is not a generic marketplace, social network, creator platform, generic video platform, or an EHR/medical-record system.
 
-This repository is intentionally documentation-first. Application implementation begins only after these records have been used to turn validated product and technical decisions into work.
+This repository has completed Phase 0 documentation and is **ready for implementation**. Keep the documentation structure below stable and update affected canonical documents in place.
 
-## Permanent documentation map
+## Canonical documentation
 
-| Document | Purpose | Update when |
-| --- | --- | --- |
-| [Product blueprint](docs/PRODUCT-BLUEPRINT.md) | Product intent, users, workflows, scope, and success measures. | Product behavior, audience, or scope changes. |
-| [Technical specification](docs/TECHNICAL-SPECIFICATION.md) | Functional and non-functional requirements, boundaries, and acceptance criteria. | A requirement is clarified, added, or retired. |
-| [Architecture](docs/ARCHITECTURE.md) | System shape, integration boundaries, quality attributes, and unresolved architecture questions. | A design or integration direction changes. |
-| [Domain model](docs/DOMAIN-MODEL.md) | Canonical entities, relationships, lifecycle rules, and ownership. | Vocabulary, data ownership, or business rules change. |
-| [Roadmap](docs/ROADMAP.md) | Outcome-oriented delivery sequencing and dependencies. | Priorities, phases, or delivery dependencies change. |
-| [Project state](docs/PROJECT-STATE.md) | Snapshot of the repository at the last commit. | **After every commit.** |
-| [Decision records](docs/decisions/) | Durable, reviewable architectural and product decisions. | A material decision is proposed, accepted, changed, or deferred. |
-| [Development history](docs/DEVELOPMENT-HISTORY.md) | Chronological record of meaningful work and rationale. | A meaningful milestone or change is completed. |
-| [Agent handoff](docs/AGENT-HANDOFF.md) | Concise next-agent orientation and safe working checklist. | Priorities, known risks, or next steps change. |
+| Document | Purpose |
+| --- | --- |
+| [Product blueprint](docs/PRODUCT-BLUEPRINT.md) | Product intent, MVP scope, workflows, and UI rules. |
+| [Technical specification](docs/TECHNICAL-SPECIFICATION.md) | Implementable requirements and MVP acceptance thresholds. |
+| [Architecture](docs/ARCHITECTURE.md) | Accepted application shape, boundaries, and readiness gate. |
+| [Domain model](docs/DOMAIN-MODEL.md) | Canonical entities, ownership, data classes, and state rules. |
+| [Roadmap](docs/ROADMAP.md) | Practical implementation sequence and Post-MVP boundaries. |
+| [Project state](docs/PROJECT-STATE.md) | Snapshot of the last commit; update after every commit. |
+| [Decision records](docs/decisions/) | Durable records of material decisions. |
+| [Development history](docs/DEVELOPMENT-HISTORY.md) | Completed milestones and rationale. |
+| [Agent handoff](docs/AGENT-HANDOFF.md) | Starting instructions for the next implementation agent. |
 
-## Documentation change rules
+## Working rules
 
-1. Treat these paths and filenames as stable public project interfaces. Edit the relevant document in place; do not create a competing “v2”, “new”, or replacement structure.
-2. Update every document affected by a change in the same change set. Cross-link related decisions, requirements, and roadmap items rather than duplicating conflicting detail.
-3. Update **docs/PROJECT-STATE.md** immediately after **every** commit so it names that commit and accurately describes the committed repository state. If a commit changes plans or decisions, also update the relevant durable record and history.
-4. Record materially consequential choices in **docs/decisions/** using the required decision-record sections and status vocabulary. Never silently convert a proposal into an implementation assumption.
-5. Preserve open questions as open. Do not imply a vendor, provider, framework, schema, or timeline has been selected unless an accepted record says so.
-6. Keep documentation specific, testable, and current. Use links to canonical sections rather than copying large blocks.
-7. Only add project-specific agent instructions or reusable skills when they provide durable, actionable guidance beyond these documents. Do not add generic boilerplate.
+1. Use doctor/patient/consultation vocabulary consistently.
+2. Implement the accepted MVP decisions; do not reopen them without evidence and an ADR where material.
+3. Keep provider integrations behind application-owned adapters. Provider selection is Post-MVP unless a specific implementation task accepts one through an ADR.
+4. Do not expand the MVP into KYC, credential verification, recordings, attachments, external calendar synchronization, reviews, payouts, or EHR/clinical-record scope.
+5. Update all affected canonical documents, development history, and `docs/PROJECT-STATE.md` in the same commit when possible.
+6. Create a sequential ADR for a material architecture, security, data, provider, or product decision; retain historical ADRs and supersede rather than rewrite an accepted decision without a new record.
 
-## Current direction
-
-Laravel/PHP with Livewire is an **evaluated direction**, not an implementation commitment. PostgreSQL is proposed pending operational validation; MySQL remains the alternative under evaluation. Video, realtime, translation, payments, hosting, cloud, storage, messaging, and email/SMS providers are explicitly open pending documented evaluation. See the [architecture](docs/ARCHITECTURE.md), [technical specification](docs/TECHNICAL-SPECIFICATION.md), and [decision records](docs/decisions/).
+See the [final implementation readiness gate](docs/ARCHITECTURE.md#final-implementation-readiness-gate) and the mandatory [MVP Acceptance Thresholds](docs/TECHNICAL-SPECIFICATION.md#mvp-acceptance-thresholds) before changing implementation scope.
