@@ -1,5 +1,9 @@
 # Development history
 
+## 2026-09-06 — Phase 0 architecture and product decision analysis
+
+Documented the MVP boundary, lightweight doctor-card design rule, explicit KYC exclusion, first vertical slice, appointment state machine, scheduling/concurrency approach, translation/SEO/security analysis, operational minimum, and implementation readiness gate. Proposed PostgreSQL pending operational validation; kept application framework and provider selections open. No application code was added.
+
 ## 2026-09-06 — Documentation history merge resolved
 
 Resolved add/add conflicts between the merged documentation history and the corrected WishUBest foundation. Retained the canonical doctor/patient, appointment, consultation, translation, SEO, privacy, and open-decision documentation in place.

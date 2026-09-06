@@ -42,3 +42,23 @@ This model is doctor-consultation specific, not a generic marketplace model. App
 ## Open modeling decisions
 
 Initial jurisdictions, patient data categories, doctor licensing/credential verification, clinics/organizations, cross-border care eligibility, scheduling recurrence/time-zone policy, calendar sync, consultation documentation/recording, reviews, refunds/payouts, retention, and emergency/escalation policy must be decided before implementation.
+
+## Recommended MVP appointment state machine
+
+| State | Entered by | Legal transitions | Notes |
+| --- | --- | --- | --- |
+| draft hold | Patient booking flow/system | requested, expired, cancelled | Short-lived internal reservation; one active hold per doctor/time interval. |
+| requested | Patient | confirmed, cancelled, rejected | Use only if doctor acceptance is a product requirement; otherwise create confirmed directly. |
+| confirmed | System, doctor, or patient according to policy | rescheduled, cancelled, in-progress, no-show | Confirmation requires valid availability and any accepted payment condition. |
+| rescheduled | Patient/doctor/system | confirmed, cancelled | Preserve links to prior appointment and audit reason. |
+| in-progress | System/authorized participant | completed, no-show, exception | Consultation mode determines session/access behavior. |
+| completed | System/doctor | exception only | Terminal for ordinary booking; clinical records are out of scope until policy says otherwise. |
+| no-show | Doctor/system, with dispute path | exception | Requires a policy-defined observation window and audit trail. |
+| cancelled | Patient/doctor/system | exception | Refund eligibility is derived from accepted cancellation/refund policy. |
+| rejected, expired, exception | System/doctor/operator | exception resolution | Terminal or operator-governed states. |
+
+Appointment creation must atomically re-check the doctor/time interval and consume the hold so two concurrent requests cannot create a double booking. Store the appointment's intended time zone and normalized instant; recurring availability and exceptions are source rules, while confirmed appointments are immutable scheduling facts. Calendar synchronization is deferred.
+
+## Future verification extension
+
+A verification case may later link a doctor, credential evidence, reviewer, status, expiry, and audit events. It is deliberately absent from MVP authorization: publication approval is a moderation workflow, not proof of identity, credentials, licence, or clinic status.

@@ -43,3 +43,25 @@ Translation must support UI, doctor-profile content, localized public medical co
 ## Quality attributes and acceptance baseline
 
 Security, privacy, accessibility, localization quality, clinical-safety considerations, observability, resilience, performance, recoverability, cost transparency, and auditability are release criteria. Before implementation, accept the product/medical boundary, identity and authorization model, appointment lifecycle, scheduling/time-zone rules, data-store choice, translation operating model, provider evaluation criteria, and the first patient discovery-to-booking vertical slice.
+
+## MVP interface and directory requirements
+
+The public discovery UI must follow the lightweight doctor-card rule in the product blueprint. A default card exposes only photo, name, specialty, and location. Detailed profile information is progressively disclosed on a doctor profile or booking screen. Rendering architecture must support this low-density default without requiring hidden data to be shipped to every result card.
+
+Doctor registration, doctor profile creation, publication approval/moderation, and future KYC/professional verification are independent processes. MVP requires the first three only; KYC and professional, identity, licensing, and organization/clinic verification are explicitly out of scope.
+
+## Authentication and authorization recommendation
+
+Use a single account identity with separate patient and doctor profile capabilities and explicit, server-enforced role assignments for administrator, support, and moderation work. Use secure first-party browser sessions, credential recovery/verification controls, session rotation/invalidation, rate limits, and authorization policies evaluated for every resource action. Do not use client route visibility as authorization. Whether initial doctor access requires invitation, self-registration, or manual approval is a product decision.
+
+## Operational requirements by maturity
+
+MVP requires a relational database, durable transactional work queue, scheduled jobs, basic cache only where measured, audit events, backups, monitoring/alerting, and asynchronous email notification capability. It does not require a separate cache cluster, message broker, websocket fleet, microservices, or external calendar synchronization.
+
+Video requires a short-lived, appointment-scoped provider session/access grant. Chat requires ordered, authorized messages and notification delivery; realtime delivery is desirable only after polling/refresh is shown insufficient. In-person appointments require no media session. Attachments, recordings, and clinical documentation are deferred; do not permit uploads until retention, malware handling, authorization, and legal review are defined.
+
+## Storage and notification boundaries
+
+Use an object-storage abstraction when public photos or private files are required. Public doctor images may be cacheable public assets after publication approval. Patient uploads, consultation attachments, and private medical-related files require private storage, authorization-checked time-bounded delivery, malware scanning policy, retention, and audit access; they are deferred from MVP unless accepted explicitly.
+
+Notifications are application-owned intents with channel adapters. MVP needs email confirmation and reminder events plus in-app status; SMS is open and should be justified by market/product need. All notification providers remain open.

@@ -30,4 +30,4 @@ This repository is intentionally documentation-first. Application implementation
 
 ## Current direction
 
-Laravel/PHP with Livewire is an **evaluated direction**, not an implementation commitment. PostgreSQL and MySQL remain under evaluation. Video, realtime, translation, payments, hosting, cloud, storage, messaging, and email/SMS providers are explicitly open pending documented evaluation. See the [architecture](docs/ARCHITECTURE.md), [technical specification](docs/TECHNICAL-SPECIFICATION.md), and [decision records](docs/decisions/).
+Laravel/PHP with Livewire is an **evaluated direction**, not an implementation commitment. PostgreSQL is proposed pending operational validation; MySQL remains the alternative under evaluation. Video, realtime, translation, payments, hosting, cloud, storage, messaging, and email/SMS providers are explicitly open pending documented evaluation. See the [architecture](docs/ARCHITECTURE.md), [technical specification](docs/TECHNICAL-SPECIFICATION.md), and [decision records](docs/decisions/).

@@ -21,3 +21,7 @@ Perform Phase 0–1 analysis for the first patient discovery-to-booking workflow
 ## High-risk decisions
 
 Cross-border healthcare/legal scope, patient-data classification, credential verification, appointment concurrency, consultation communication/recording, translation of medical content, payment/tax/refund responsibility, and public-profile SEO can materially change the architecture.
+
+## Phase 0 status and implementation gate
+
+Phase 0 has produced an explicit MVP boundary, first vertical-slice definition, database recommendation pending acceptance, and an implementation-readiness gate in Architecture. It has not selected Laravel/Livewire, PostgreSQL, any provider, initial market, payment model, or legal/compliance posture. Do not code until the gate's prerequisites for the first vertical slice are accepted.
