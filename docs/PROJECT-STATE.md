@@ -2,8 +2,8 @@
 
 ## Last commit
 
-- **Commit:** **HEAD** — Complete Phase 0 architecture and product decision analysis (this commit).
-- **Previous documentation baseline:** 9de7fb4 — Merge origin/main and resolve documentation conflicts.
+- **Commit:** **HEAD** — Merge current main and reconcile Phase 0 documentation conflicts (this commit).
+- **Previous documentation baseline:** b87ef91 — docs: complete Phase 0 architecture analysis; reconciled against current origin/main.
 - **Repository state at HEAD:** documentation-only planning repository; the permanent documents now define WishUBest as a multilingual doctor discovery, appointment booking, and medical consultation platform. No application code, dependencies, migrations, or test suite exist.
 - **Update rule:** after every commit, update this section in place so it identifies the new HEAD and accurately describes that committed state.
 
