@@ -2,63 +2,68 @@
 
 ## Modeling principles
 
-This model is doctor-consultation specific, not a generic marketplace model. Application records own business truth; provider identifiers/events are integration evidence. Sensitive patient, appointment, and communication data require purpose-limited access, retention rules, and auditability. Exact clinical/legal responsibilities remain open pending jurisdiction and policy analysis.
+This is a doctor-consultation model, not a generic marketplace model. Application records are authoritative; provider IDs and callbacks are integration evidence. Store the minimum necessary data, enforce access by relationship and purpose, and record security-sensitive changes as audit events. WishUBest does not create clinical records in MVP.
 
-## Bounded contexts and entities
+## Core MVP entities and ownership
 
-| Context | Entities and ownership |
+| Entity | Purpose and key relationships |
 | --- | --- |
-| Identity and access | **Account**, role assignment, session, consent/preference. An account may act as a patient, doctor, or authorized operator; privileged roles are explicitly assigned. |
-| Patient | **Patient profile** contains only necessary identity/contact/preference attributes and is controlled by the patient subject to policy. |
-| Doctor directory | **Doctor profile**, specialty, medical service, location/clinic association, spoken language, public content, credential, verification. A doctor owns submitted profile data; verification/publication is governed by administration. |
-| Scheduling and booking | **Availability schedule**, availability slot/exception, appointment, booking hold, appointment participant. The appointment is the authoritative relationship between patient, doctor, selected service/type, scheduled time, and lifecycle state. |
-| Consultation and communication | **Consultation**, consultation type (video, online chat, in-person), conversation, message, attachment reference, provider-session reference. A consultation is authorized by an eligible appointment; external sessions do not replace appointment state. |
-| Translation and localization | **Localized content**, translation request/result, terminology/context reference. Each translated artifact links to source version, locale, provenance, review state, and stale state. |
-| Commerce | **Order/payment**, refund, invoice/tax record where required, provider transaction. Internal state is idempotent and authoritative for access/booking decisions. |
-| Operations | Notification, report, administrative case, moderation action, privacy request, audit event. Access is least privilege and actions/reasons are attributable. |
+| Account | One authenticated identity; has explicit roles and may own one Patient and/or Doctor capability. |
+| Patient | Private profile with minimum contact and preference data; owns appointments as patient participant. |
+| Doctor | Account capability that owns one Doctor Profile, availability, and doctor-side appointments. |
+| Doctor Profile | Doctor-submitted professional public content, specialty/location/service associations, locale content, and `draft → submitted → approved/rejected → retired` publication state. |
+| Specialty, Location, Medical Service | Controlled directory concepts referenced by approved profiles; Location is a public practice/consultation location, not patient location. |
+| Consultation Type | Fixed MVP values: `video`, `online_chat`, `in_person`. |
+| Availability Rule / Availability Exception | Doctor-local-time recurring weekly intervals and dated overrides. They are source rules, not appointment facts. |
+| Booking Hold | Short-lived, unique reservation for a doctor/time interval; consumed or expired. |
+| Appointment | Authoritative patient-doctor-service/type/time relationship and lifecycle fact. Stores doctor scheduling timezone plus normalized UTC start/end instants. |
+| Consultation | Appointment-authorized interaction with `prepared → active → ended → access_expired`; contains mode-specific access reference only. |
+| Conversation / Message | One private online-chat conversation per eligible chat appointment; ordered persisted messages with sender, sequence, idempotency key, and timestamps. |
+| Localized Content / Translation | Source text plus locale variants. A translation records source version, target locale, provenance, review status, and stale state. |
+| Notification | Application-owned delivery intent, channel, idempotency key, status, retry data, and subject reference. |
+| Audit Event | Append-only actor/action/resource/reason/time evidence, with redacted metadata. |
+| Payment | Post-MVP. No order, payment intent, refund, or provider transaction is required in the MVP schema. |
 
-## Core relationships and lifecycle rules
+## Relationships and publication
 
-- A doctor has one governed professional profile and may have many specialties, services, languages, locations, credential records, availability schedules, and public localizations.
-- Credential and verification states are distinct from profile draft/published/retired states. A public claim is published only when policy permits.
-- An appointment belongs to one patient and one doctor and references one consultation type, one selected service where applicable, a scheduled time interval/time zone, and a lifecycle such as draft hold, requested, confirmed, rescheduled, cancelled, completed, no-show, or exception. Exact transitions are policy decisions.
-- Availability is doctor-controlled subject to policy; booking must prevent invalid or conflicting reservations under concurrent requests. Holds and external calendar synchronization need explicit design.
-- A consultation is created only for an authorized appointment and has a separate preparation/active/ended/access-expired lifecycle. Recording, notes, attachments, and retention are open decisions.
-- Conversations/messages are private to authorized participants and operators with a defined purpose. Translation does not broaden access to source content.
-- A source update marks related translations stale; machine and human translations are distinguishable and reviewable.
-- Payment status can affect booking confirmation only according to accepted commercial policy. Provider callbacks are verified and idempotent.
-- Reports may concern accounts, doctor profile content, messages, appointments, or other governed resources; actions must preserve appropriate confidentiality and audit evidence.
+A doctor owns submitted profile information and availability; an administrator/moderator owns the publication decision. Only an `approved` profile and its approved public localizations are discoverable. Account registration, profile creation, publication approval, and future verification remain distinct. Future verification may link credential evidence, reviewer, expiry, and audit events but has no MVP authorization effect.
+
+An appointment has exactly one patient, one doctor, one consultation type, one scheduled interval, and one selected service where applicable. A consultation and conversation exist only through an authorized appointment; external video/chat sessions never become the appointment authority.
+
+## Scheduling and appointment state machine
+
+Doctor availability uses recurring local-week rules plus one-off local-date exceptions. For a requested window, the booking service expands rules in the doctor’s IANA timezone, converts display times for the patient’s selected/display timezone, and creates a normalized UTC interval. Store the original doctor timezone and UTC instants on every appointment.
+
+| State | Legal transitions | MVP meaning |
+| --- | --- | --- |
+| `draft_hold` | `confirmed`, `expired`, `cancelled` | Short-lived atomic reservation for a doctor/time interval. |
+| `confirmed` | `rescheduled`, `cancelled`, `in_progress`, `no_show` | Valid booked appointment; confirmation notification is queued. |
+| `rescheduled` | `confirmed`, `cancelled` | New valid interval is reserved; links to the prior appointment and audit reason. |
+| `in_progress` | `completed`, `no_show`, `exception` | Authorized consultation window is active. |
+| `completed` | `exception` | Ordinary terminal outcome; no clinical record is implied. |
+| `no_show` | `exception` | Policy-defined attendance outcome with audit evidence. |
+| `cancelled`, `expired`, `exception` | operator-governed exception resolution only | Terminal ordinary booking outcome. |
+
+The MVP confirms immediately—there is no doctor-acceptance `requested` state and no payment condition. Cancellation is allowed by patient or doctor before start; rescheduling is controlled cancel/rebook with an audit link; no-show is set by the doctor or an authorized operator after the appointment window; completion is set by the doctor or system after the consultation. Exact cancellation cutoff is a configurable MVP policy defaulting to any time before start, and is not a refund policy.
+
+A transaction must re-check eligibility and conflict, consume one unexpired hold, and create exactly one appointment. PostgreSQL must enforce an overlap-prevention constraint/index strategy for active holds/appointments of the same doctor; UI availability checks alone are insufficient. Duplicate booking submission uses an idempotency key.
+
+## Consultation modes
+
+- **Video:** an application-owned consultation adapter issues an appointment-scoped, short-lived access grant only to authorized participants during the permitted window. The provider remains replaceable; recording is unavailable.
+- **Online chat:** the eligible appointment owns one private persisted conversation. Message sequence gives deterministic ordering; append uses an idempotency key. Polling/refresh is the MVP delivery baseline; a realtime adapter is Post-MVP only if measured need justifies it. Notification intents are emitted for new messages.
+- **In-person:** the appointment provides authorized location visibility, reminders, attendance/no-show/completion actions, and no media session.
 
 ## Data classification
 
-| Class | Examples | Handling |
+| Class | Examples | Required handling |
 | --- | --- | --- |
-| Public | Approved doctor profile, specialties, services, eligible locations, localized discovery content. | Index only when publication policy permits. |
-| Private/personal | Patient profile, preferences, appointment history, availability administration. | Purpose-limited authorization; exclude from public indexes and unsafe logs. |
-| Sensitive consultation | Chat, attachments, consultation metadata/content, health-related details if collected. | Minimize, protect, auditable access, defined consent/retention; legal requirements pending. |
-| Restricted operations | Credential evidence, verification, reports, payment references, privacy requests. | Least privilege, redaction, audit access, retention policy. |
-| Sensitive integration | Tokens, webhooks, provider payloads, secret configuration. | Protect/encrypt, minimize, redact logs, rotate and restrict access. |
+| Public | Approved profile, specialty, service, approved location, approved localization. | Crawlable only after publication approval. |
+| Private/personal | Patient profile, preferences, availability administration, appointments. | Relationship/purpose authorization; no public indexing or unsafe logging. |
+| Sensitive consultation | Conversation/message, consultation metadata, any health-related input. | Minimize, protect, audit access, retention policy; no external translation in MVP. |
+| Restricted operations | Publication decisions, reports, privacy requests, audit evidence. | Least privilege, redaction, audit trail. |
+| Sensitive integration | Tokens, webhooks, provider payloads, secrets. | Encrypt/protect, redact logs, rotate/restrict. |
 
-## Open modeling decisions
+## Post-MVP modeling boundaries
 
-Initial jurisdictions, patient data categories, doctor licensing/credential verification, clinics/organizations, cross-border care eligibility, scheduling recurrence/time-zone policy, calendar sync, consultation documentation/recording, reviews, refunds/payouts, retention, and emergency/escalation policy must be decided before implementation.
-
-## Recommended MVP appointment state machine
-
-| State | Entered by | Legal transitions | Notes |
-| --- | --- | --- | --- |
-| draft hold | Patient booking flow/system | requested, expired, cancelled | Short-lived internal reservation; one active hold per doctor/time interval. |
-| requested | Patient | confirmed, cancelled, rejected | Use only if doctor acceptance is a product requirement; otherwise create confirmed directly. |
-| confirmed | System, doctor, or patient according to policy | rescheduled, cancelled, in-progress, no-show | Confirmation requires valid availability and any accepted payment condition. |
-| rescheduled | Patient/doctor/system | confirmed, cancelled | Preserve links to prior appointment and audit reason. |
-| in-progress | System/authorized participant | completed, no-show, exception | Consultation mode determines session/access behavior. |
-| completed | System/doctor | exception only | Terminal for ordinary booking; clinical records are out of scope until policy says otherwise. |
-| no-show | Doctor/system, with dispute path | exception | Requires a policy-defined observation window and audit trail. |
-| cancelled | Patient/doctor/system | exception | Refund eligibility is derived from accepted cancellation/refund policy. |
-| rejected, expired, exception | System/doctor/operator | exception resolution | Terminal or operator-governed states. |
-
-Appointment creation must atomically re-check the doctor/time interval and consume the hold so two concurrent requests cannot create a double booking. Store the appointment's intended time zone and normalized instant; recurring availability and exceptions are source rules, while confirmed appointments are immutable scheduling facts. Calendar synchronization is deferred.
-
-## Future verification extension
-
-A verification case may later link a doctor, credential evidence, reviewer, status, expiry, and audit events. It is deliberately absent from MVP authorization: publication approval is a moderation workflow, not proof of identity, credentials, licence, or clinic status.
+Verification/KYC, clinics/organizations, recordings, attachments, clinical documentation, calendar sync, waitlists, capacity scheduling, reviews, payments/refunds/payouts, and advanced search are intentionally deferred. They require new policy and ADR work before entering the model.

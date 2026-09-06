@@ -1,27 +1,22 @@
 # Agent handoff
 
-## What WishUBest is
+## Status
 
-WishUBest is a multilingual, international platform connecting patients with doctors. Patients discover public doctor profiles and book video, online chat, or in-person consultations. Doctors manage professional presence, services, availability, appointments, and authorized patient communication. Translation is a core capability across UI, public content, notifications, and permitted communication.
+**DOCUMENTATION COMPLETE — READY FOR IMPLEMENTATION.** WishUBest is a multilingual doctor discovery, appointment booking, and medical consultation platform for video, online chat, and in-person consultations. It is not a generic marketplace or EHR.
 
-It is not a generic marketplace product. Do not reintroduce a generic marketplace vocabulary or model.
+## Begin here
 
-## Start here
+1. Read `README.md`, this handoff, [Architecture](ARCHITECTURE.md), [Domain model](DOMAIN-MODEL.md), [Technical specification](TECHNICAL-SPECIFICATION.md), and accepted ADRs.
+2. Begin Phase 1 implementation: Laravel/PHP + Livewire modular monolith, PostgreSQL, first-party sessions, roles/policies, migrations, test harness, queue/scheduler, and `en`/`es` catalogs.
+3. Implement the first vertical slice in roadmap order and write tests against every mandatory acceptance threshold—especially concurrency, timezone, authorization/privacy, and public/private SEO boundaries.
+4. Preserve the minimal four-field doctor-card rule. KYC and all verification are out of MVP; profile publication moderation is required and is not verification.
+5. Keep video, translation, email, storage, and hosting behind adapters. Do not send protected content to translation services. Do not add payments to the first slice.
+6. Update canonical documentation, development history, and `PROJECT-STATE.md` after every commit. Record material deviations with a sequential ADR.
 
-1. Read the root README rule, this handoff, PROJECT-STATE, and relevant ADRs.
-2. Update canonical documentation in place; preserve paths and leave unresolved questions explicitly open.
-3. Before implementation, resolve the medical/legal and privacy boundary, scheduling/booking lifecycle, initial locales/translation policy, and evaluation criteria.
-4. Do not select video, realtime, translation, payment, hosting, cloud, storage, messaging, or email/SMS providers by implication; document evaluation and material ADRs.
-5. After each commit, update PROJECT-STATE in the same commit when possible.
+## Non-blocking legal/compliance boundary
 
-## Current safe next step
+Technical foundation and controlled MVP implementation may begin. Before public production launch in a jurisdiction, obtain applicable review for medical-practice scope, privacy/retention/consent, advertising/credential claims, and emergency guidance. Keep the implemented MVP within its non-EHR, data-minimizing, no-protected-content-translation boundary.
 
-Perform Phase 0–1 analysis for the first patient discovery-to-booking workflow. Define target markets, doctor verification/publication, services and consultation modes, availability/time zones, booking changes, consent/retention, SEO requirements, and translation boundaries. Do not scaffold Laravel, create migrations, install dependencies, or implement an application.
+## Do not reopen/defer implementation for
 
-## High-risk decisions
-
-Cross-border healthcare/legal scope, patient-data classification, credential verification, appointment concurrency, consultation communication/recording, translation of medical content, payment/tax/refund responsibility, and public-profile SEO can materially change the architecture.
-
-## Phase 0 status and implementation gate
-
-Phase 0 has produced an explicit MVP boundary, first vertical-slice definition, database recommendation pending acceptance, and an implementation-readiness gate in Architecture. It has not selected Laravel/Livewire, PostgreSQL, any provider, initial market, payment model, or legal/compliance posture. Do not code until the gate's prerequisites for the first vertical slice are accepted.
+Laravel/Livewire, PostgreSQL, scheduling model, locale strategy, SEO strategy, payment exclusion, KYC exclusion, or the final readiness gate: these are accepted. Post-MVP items are listed in [Roadmap](ROADMAP.md#post-mvp).

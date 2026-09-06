@@ -1,5 +1,9 @@
 # Development history
 
+## 2026-09-06 — Documentation completion and implementation readiness
+
+Completed the Phase 0 documentation consolidation and resolved the implementation decisions required to start coding. Accepted Laravel/PHP with Livewire as a server-rendered modular monolith and PostgreSQL as the MVP database; finalized the scheduling state machine, appointment concurrency/timezone rules, consultation boundaries, `en`/`es` public localization/SEO strategy, no-payment first slice, KYC exclusion, minimum infrastructure, and final implementation readiness gate. Added mandatory MVP Acceptance Thresholds and a direct implementation roadmap. Provider choices, payments, verification, advanced realtime, and other nonessential capabilities are explicitly Post-MVP. **DOCUMENTATION COMPLETE — READY FOR IMPLEMENTATION.** No application code was added.
+
 ## 2026-09-06 — Phase 0 architecture and product decision analysis
 
 Documented the MVP boundary, lightweight doctor-card design rule, explicit KYC exclusion, first vertical slice, appointment state machine, scheduling/concurrency approach, translation/SEO/security analysis, operational minimum, and implementation readiness gate. Proposed PostgreSQL pending operational validation; kept application framework and provider selections open. No application code was added.
@@ -11,9 +15,3 @@ Resolved add/add conflicts between the merged documentation history and the corr
 ## 2026-09-06 — WishUBest foundation corrected
 
 Corrected the permanent documentation foundation after the initial generic marketplace interpretation was identified as inaccurate. The canonical product is now a multilingual, international doctor discovery, appointment booking, and medical consultation platform for video, online chat, and in-person consultations.
-
-Reworked product workflows, technical requirements, architecture questions, bounded contexts, entities, roadmapping, project state, handoff, and the initial technology/provider ADR around patients, doctors, appointments, consultations, translation, SEO, privacy, and operations. No application implementation was added. The prior generic terminology is not canonical and must not be reused.
-
-## 2026-09-06 — Documentation-first foundation established
-
-Established the permanent documentation structure before implementation, including the root contract, blueprint, specification, architecture, domain model, decision-record format, roadmap, state, history, and handoff. This structural foundation remains in place; its product content was corrected by the entry above.
