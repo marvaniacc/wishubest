@@ -1,67 +1,73 @@
 # Technical specification
 
-## Functional requirements
+## MVP functional requirements
 
-- Support accounts, patient and doctor roles/profiles, administrative roles, and server-side role/resource authorization.
-- Provide public, localized, crawlable doctor profiles and specialty/location discovery where publishing and verification policy permits.
-- Support doctor specialties, services, consultation types, locations, languages, credentials where applicable, availability, scheduling, and pricing representation.
-- Support appointment discovery, booking, confirmation, reschedule, cancellation, completion, no-show, and disputed/exception states according to a defined policy.
-- Support authorized video, chat, and in-person consultation workflows without treating an external provider as the authoritative appointment record.
-- Provide patient and doctor dashboards, preference-aware notifications, reporting, administrative operations, and auditable changes.
-- Support payments and refunds only through a provider-agnostic, compliant boundary when the commercial model is accepted.
+1. Support Account roles: patient, doctor, administrator, and moderator; enforce role/resource policy server-side.
+2. Serve `en` and `es` server-rendered public discovery, doctor profile, specialty, and location pages for approved content only.
+3. Let doctors create/edit profiles, services, locations, consultation types, recurring availability, and dated exceptions; let administrators/moderators approve or reject publication.
+4. Let authenticated patients view valid availability, create an idempotent hold/booking, receive confirmation, and view only their own appointments.
+5. Implement the canonical appointment state machine and all three consultation types: appointment-scoped video entry, authorized persisted online chat, and in-person location/attendance workflow.
+6. Generate durable email confirmation/reminder and in-app notification intents asynchronously; retry safely and prevent duplicate critical intents.
+7. Record auditable publication, appointment-transition, privileged, and sensitive-access events.
 
-## Security, privacy, and medical boundaries
+## Scheduling, consultation, and data integrity
 
-| Boundary | Requirement |
-| --- | --- |
-| Identity and sessions | Secure credentials, session protection, recovery/verification controls, rate limiting, and audit-safe events. |
-| Authorization | Evaluate every protected request server-side; separate patient, doctor, support, moderation, and administrator capabilities. |
-| Patient/appointment data | Minimize collection, encrypt/protect sensitive data, restrict access by relationship and purpose, redact logs, and define retention. |
-| Consultation communication | Treat chat and video-related content as private and potentially sensitive; define consent, recording, storage, access, export, and deletion rules before implementation. |
-| Doctor information | Define source, verification, review, publication, correction, expiry, and jurisdiction rules for credentials and public claims. |
-| Payments | Keep raw card data outside application systems; verify callbacks and preserve idempotent internal payment/refund state. |
-| Operations | Restrict production access, retain necessary audit evidence, define incident response, backup/recovery, and privacy-rights procedures. |
+Availability consists of weekly doctor-local-time intervals and dated exceptions. Expand only the requested range; display in the patient timezone; store UTC start/end instants and doctor timezone. Create/consume holds, re-check conflicts, and insert an appointment transactionally. PostgreSQL must enforce no active overlapping appointment/hold interval for a doctor; duplicate submissions use idempotency keys. The state machine and lifecycle ownership are canonical in the [domain model](DOMAIN-MODEL.md#scheduling-and-appointment-state-machine).
 
-## Translation and internationalization architecture
+Video access is a short-lived, appointment-scoped adapter grant. Online chat is one authorized appointment conversation with persisted deterministic sequence, idempotent writes, polling/refresh baseline, and notification intents. In-person appointments expose location only to authorized participants. Attachments, recordings, clinical notes, and external calendar sync are excluded.
 
-Translation must support UI, doctor-profile content, localized public medical content, notifications, patient/doctor communication, chat, and potentially consultation-related communication subject to policy. The product must distinguish source text, machine output, human review, translation provenance, source version, target locale, review state, and stale state.
+## Security, privacy, and operations
 
-- Store locale-neutral domain facts separately from localized presentation and translated content.
-- Maintain a locale registry with language/region, writing direction, formats, fallbacks, support status, and jurisdictional availability.
-- Use versioned UI translation catalogs; do not distribute user-facing literals through application code.
-- Preserve medical terminology/context where translation is used; define terminology governance, quality thresholds, human review triggers, and user disclosure.
-- Evaluate latency, caching, persistence, retention, consent, access control, and provider abstraction separately for public content, notifications, chat, and consultation-related communication.
-- Do not select or transmit protected content to a translation provider before the privacy, legal, and consent boundary is documented.
+Use secure first-party sessions, CSRF, password recovery/verification, session rotation/invalidation, rate limiting, server-side policies, validation, mass-assignment protection, redacted logs, audit events, least-privilege administration, encrypted transport, protected backups, and tested restore procedures. Private resources are authorized by relationship/purpose and are not indexable. No protected patient, appointment, or communication content is sent to an external translation provider in MVP. No file upload is required; do not add one without malware, retention, authorization, and legal controls.
 
-## SEO requirements
+MVP infrastructure is Laravel application hosting, PostgreSQL, durable queue worker, scheduler, email adapter, logs/metrics/alerts, and tested backups. Use cache only when measured and never for booking correctness. No SMS, separate broker, websocket fleet, search cluster, or Kubernetes is required.
 
-- Public, eligible doctor profiles are a core SEO surface and must support server-rendered/crawlable content, accurate profile metadata, structured data where appropriate, and strong performance.
-- Evaluate canonical URLs, multilingual SEO, hreflang alternatives, specialty/location discovery pages, sitemaps, pagination, indexing rules, and duplicate-content prevention. Do not prescribe a URL structure before architecture analysis.
-- Publish only approved public data. Dashboards, patient information, appointments, consultation communications, payment flows, administrative views, personalized results, and protected assets must be non-indexable or access-controlled.
-- Ensure semantic accessible HTML, meaningful internal linking, crawl-safe redirects/errors, image/media metadata, and explicit retirement handling.
+## Localization, translation, and SEO
 
-## Quality attributes and acceptance baseline
+Use versioned UI catalogs for `en` and `es`; no user-facing literals are distributed through application code. Localized public content stores source text/version, target locale, provenance (author or machine), review status, and stale state. Source updates mark translations stale. UI localization and approved public doctor/discovery translation are in scope; patient/doctor communication and chat translation are Post-MVP.
 
-Security, privacy, accessibility, localization quality, clinical-safety considerations, observability, resilience, performance, recoverability, cost transparency, and auditability are release criteria. Before implementation, accept the product/medical boundary, identity and authorization model, appointment lifecycle, scheduling/time-zone rules, data-store choice, translation operating model, provider evaluation criteria, and the first patient discovery-to-booking vertical slice.
+Render approved public pages at locale-prefixed URLs, canonicalize to the public localized URL, emit `hreflang` only for available published alternatives, and include approved pages in XML sitemaps. Use semantic accessible HTML and accurate structured data for public doctor/profile claims. Prevent indexing of dashboards, appointments, consultations, chat, payments, administration, and protected assets.
 
-## MVP interface and directory requirements
+## Payment boundary
 
-The public discovery UI must follow the lightweight doctor-card rule in the product blueprint. A default card exposes only photo, name, specialty, and location. Detailed profile information is progressively disclosed on a doctor profile or booking screen. Rendering architecture must support this low-density default without requiring hidden data to be shipped to every result card.
+Payments are not part of the first implementation vertical slice. Display of pricing is optional public information and has no payment effect. Do not build payment intents, webhooks, refunds, payouts, currencies, or tax handling until a Post-MVP commercial decision and provider ADR are accepted.
 
-Doctor registration, doctor profile creation, publication approval/moderation, and future KYC/professional verification are independent processes. MVP requires the first three only; KYC and professional, identity, licensing, and organization/clinic verification are explicitly out of scope.
+## Non-functional baseline
 
-## Authentication and authorization recommendation
+Core flows must be responsive on desktop, tablet, and mobile; keyboard operable; semantically marked up; visibly focused; labeled with useful validation errors; and use usable contrast. Public production-like pages target LCP ≤ 2.5 seconds; this is a performance target rather than an absolute blocker when measurement infrastructure is unreliable, but heavy client architecture and obvious regressions are unacceptable. Deployment must support logs, metrics, alerts, backups, and queue/scheduler health checks.
 
-Use a single account identity with separate patient and doctor profile capabilities and explicit, server-enforced role assignments for administrator, support, and moderation work. Use secure first-party browser sessions, credential recovery/verification controls, session rotation/invalidation, rate limits, and authorization policies evaluated for every resource action. Do not use client route visibility as authorization. Whether initial doctor access requires invitation, self-registration, or manual approval is a product decision.
+## MVP Acceptance Thresholds
 
-## Operational requirements by maturity
+These are mandatory implementation acceptance criteria, not optional recommendations.
 
-MVP requires a relational database, durable transactional work queue, scheduled jobs, basic cache only where measured, audit events, backups, monitoring/alerting, and asynchronous email notification capability. It does not require a separate cache cluster, message broker, websocket fleet, microservices, or external calendar synchronization.
+### A. Core journey and discovery
 
-Video requires a short-lived, appointment-scoped provider session/access grant. Chat requires ordered, authorized messages and notification delivery; realtime delivery is desirable only after polling/refresh is shown insufficient. In-person appointments require no media session. Attachments, recordings, and clinical documentation are deferred; do not permit uploads until retention, malware handling, authorization, and legal review are defined.
+The end-to-end journey **Visitor → discover doctor → view doctor profile → choose consultation type → select valid availability → book → confirmation → protected consultation entry** works without manual database manipulation. A visitor discovers an approved/public doctor and views the profile without authentication. Discovery is direct and cards contain only photo, name, specialty, and location.
 
-## Storage and notification boundaries
+### B. Booking, concurrency, timezone, and integrity
 
-Use an object-storage abstraction when public photos or private files are required. Public doctor images may be cacheable public assets after publication approval. Patient uploads, consultation attachments, and private medical-related files require private storage, authorization-checked time-bounded delivery, malware scanning policy, retention, and audit access; they are deferred from MVP unless accepted explicitly.
+A patient selects a genuinely available slot; successful booking creates exactly one valid appointment and confirmation; unavailable slots cannot book; state transitions follow the domain model; duplicate submissions do not duplicate appointments. Under concurrent tests for the same slot there are **0 successful double bookings**—the guarantee is transactional/database/application-enforced, never UI-only. Across defined multi-timezone test cases there are **0 known timezone inconsistencies**. Defined MVP scenarios have **0 known invalid/orphaned core records**.
 
-Notifications are application-owned intents with channel adapters. MVP needs email confirmation and reminder events plus in-app status; SMS is open and should be justified by market/product need. All notification providers remain open.
+### C. Consultation modes and chat
+
+Video, online chat, and in-person appointments each have correct booking representation, appointment authorization, and entry/action. Chat messages remain private to authorized participants, have deterministic order, resist duplicate submission, enforce conversation/appointment authorization, and generate required notification intents.
+
+### D. Authorization, privacy, and security
+
+MVP security testing has **0 known authorization boundary violations**: Patient A cannot read Patient B’s appointment or conversation; unauthorized users cannot enter consultations; Doctor A cannot access unrelated patient data; non-admins cannot perform admin actions; predictable URLs do not expose protected resources. Before release there is **no known Critical or High severity vulnerability** in implemented scope, including authentication, session/CSRF, validation, mass assignment, IDOR/access control, secrets, data leakage, rate limiting, and admin boundaries.
+
+### E. Translation and SEO
+
+For `en` and `es`, UI localization works and public doctor/profile content uses the documented source/version/locale/provenance/review/stale model without overwriting the source. Protected information is never sent to external translation without an explicit later policy. Public doctor and intended discovery pages are SSR/crawlable with defined canonical, `hreflang`, sitemap, duplicate prevention, and applicable structured-data handling. Dashboards, appointments, consultations, chat, payment flows, admin pages, and sensitive resources are not intentionally indexable.
+
+### F. Responsive, accessible, performant UI
+
+Core flows work on desktop, tablet, and mobile without hover-only or desktop-only actions. Primary flows have semantic HTML, keyboard access, visible focus, labels/errors, usable contrast, and accessible controls; no critical accessibility blocker remains. The public-page LCP target is ≤ 2.5 seconds in a production-like environment. Screens remain minimal, low-saturation, whitespace- and typography-led, and free of excessive badges/icons/metadata/decorative elements or miniature-profile cards.
+
+### G. Notifications and publication
+
+Each required confirmation/reminder/message notification creates a durable intent, avoids duplicate critical triggering, defines retry/failure behavior, and does not require an open browser. A doctor creates/edits a profile, submits it for publication, an administrator/moderator approves/rejects it, and only approved profiles appear publicly. KYC is not required.
+
+### H. Six mandatory hard gates
+
+MVP is not accepted unless all pass: **(1)** doctor discovery works; **(2)** a patient books a genuinely available slot; **(3)** tested concurrency prevents double booking; **(4)** the correct consultation mode is available and protected; **(5)** private patient/appointment/consultation data cannot cross authorization boundaries; **(6)** public doctor/discovery pages are SEO/crawl ready while private areas remain protected.

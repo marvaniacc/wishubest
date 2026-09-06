@@ -2,25 +2,26 @@
 
 ## Last commit
 
-- **Commit:** **HEAD** — Merge current main and reconcile Phase 0 documentation conflicts (this commit).
-- **Previous documentation baseline:** b87ef91 — docs: complete Phase 0 architecture analysis; reconciled against current origin/main.
-- **Repository state at HEAD:** documentation-only planning repository; the permanent documents now define WishUBest as a multilingual doctor discovery, appointment booking, and medical consultation platform. No application code, dependencies, migrations, or test suite exist.
-- **Update rule:** after every commit, update this section in place so it identifies the new HEAD and accurately describes that committed state.
+- **Commit:** **HEAD** — documentation completion and implementation-readiness finalization (this commit).
+- **Repository state:** Documentation-only repository, now **DOCUMENTATION COMPLETE — READY FOR IMPLEMENTATION**. No application code, dependencies, migrations, or test suite have been added by this documentation milestone.
+- **Update rule:** Update this section in the same commit after every commit so it identifies that commit and accurately describes the repository state.
 
-## State summary
+## Accepted implementation baseline
 
 | Area | State |
 | --- | --- |
-| Application implementation | Not started. |
-| Product definition | Doctor/patient marketplace and video/chat/in-person consultation modes documented. |
-| Technical direction | Laravel/PHP with Livewire remains open; modular SSR-first direction is recommended. |
-| Data store | PostgreSQL is proposed; acceptance remains open pending operations validation. |
-| External providers | Video, realtime, translation, payments, hosting, cloud, storage, messaging, and email/SMS providers open. |
-| Key decisions | MVP boundary/card rule accepted; legal/compliance, market, scheduling, payment, provider, and framework decisions remain gated. |
-| Delivery | Decision-gated roadmap; no dates committed. |
+| Application architecture | Accepted: Laravel/PHP + Livewire modular monolith with SSR. |
+| Database | Accepted: PostgreSQL. |
+| First slice | Public discovery → profile → availability → booking → confirmation → protected consultation entry. |
+| Locales | Accepted MVP UI/public content scope: `en` and `es`. |
+| Scheduling | Accepted local-time rules/exceptions, UTC appointment instants, holds, transaction/constraint concurrency protection, state machine. |
+| Consultation | Accepted appointment-scoped video adapter, private persisted chat/polling, and in-person workflow. |
+| SEO | Accepted locale-prefixed public SSR URLs, canonical/hreflang/sitemap strategy, private non-indexable boundary. |
+| Payments | Excluded from first slice; Post-MVP. |
+| KYC/verification | Excluded from MVP; publication moderation remains required. |
+| Providers | Adapter-based and unselected; no provider selection blocks implementation. |
+| Legal/compliance | Required before public jurisdiction launch, but does not block technical foundation. |
 
-## Next actions
+## Next action
 
-1. Assign owners and resolve Phase 0 product, market, medical/legal, and safety questions.
-2. Record Phase 1 evaluations and decisions before application implementation.
-3. Refresh this document in place after the next commit.
+Begin Roadmap Phase 1 implementation and create tests that will enforce the full [MVP Acceptance Thresholds](TECHNICAL-SPECIFICATION.md#mvp-acceptance-thresholds).

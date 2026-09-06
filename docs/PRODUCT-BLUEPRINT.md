@@ -2,65 +2,61 @@
 
 ## Product definition
 
-WishUBest is a multilingual, international doctor discovery, appointment booking, and medical consultation platform. It connects patients with doctors across language boundaries so patients can understand a doctor's professional profile, specialties, languages, locations, services, availability, consultation options, and applicable pricing before booking care.
-
-The core consultation modes are video consultation, online chat consultation, and in-person consultation. Translation is a product differentiator across public information and permitted patient/doctor communication; it is not limited to interface strings.
+WishUBest is a multilingual, international platform for patients to discover doctors, book appointments, and enter authorized video, online chat, or in-person consultations. Translation is a significant differentiator for the UI and approved public doctor/discovery content. WishUBest is not a generic marketplace, social network, generic video service, or EHR.
 
 ## Users and outcomes
 
-| User | Primary outcome |
+| User | Outcome |
 | --- | --- |
-| Visitor | Find trustworthy, localized public doctor information and understand available care options. |
-| Patient | Discover an appropriate doctor, book and manage a consultation, communicate safely, and control personal information. |
-| Doctor | Maintain a professional presence, define offerings and availability, manage appointments, and communicate with patients. |
-| Administrator | Govern users, doctors, bookings, payments, content, moderation, configuration, and operational issues. |
-| Support/moderation operator | Resolve reports and support cases using least-privilege, auditable access. |
+| Visitor | Finds an approved, localized public doctor profile and understands available consultation options. |
+| Patient | Books and manages a consultation, receives notifications, and accesses only their authorized consultation. |
+| Doctor | Creates a professional profile, manages services/availability, and manages authorized appointments. |
+| Administrator/moderator | Approves or rejects doctor-profile publication and resolves operational exceptions with auditable, least-privilege access. |
 
-## Core workflows
+## Final UX direction
 
-1. **Discover a doctor:** a visitor searches or browses public doctor profiles and specialty/location pages; filters by specialty, location, language, consultation type, availability, and applicable price; and understands credentials and service information in a supported locale.
-2. **Book a consultation:** a patient authenticates or creates an account, selects a doctor, service, consultation type, available time, preferred language, and required details; reviews price/terms; completes payment where applicable; and receives a confirmed or pending booking.
-3. **Prepare and attend:** a patient and doctor receive appropriate notifications, manage a booking within policy, and enter the authorized video, chat, or in-person consultation flow. Consultation communications are private and are never public search content.
-4. **Doctor practice management:** a doctor completes account/profile setup and is subject to publication approval/moderation, manages specialties/services/pricing/locations/languages, maintains availability, and acts on appointment changes. Future professional verification is separate from MVP onboarding.
-5. **Administrative governance:** authorized staff review doctor verification, reported content/conduct, operational exceptions, bookings, payments, and configuration; actions and reasons are auditable.
-6. **Privacy and account management:** patients and doctors manage preferences, language settings, data requests, and communication consent subject to applicable policy and law.
+The interface is minimal, modern, clean, professional, trustworthy, low-saturation, whitespace-oriented, typography-led, and easy to scan. Avoid decorative icons, aggressive color, excess metadata, and visually overloaded screens.
 
-## Product requirements and boundaries
+### Doctor discovery-card rule
 
-Required capabilities: multilingual UX; international users; public doctor profiles; doctor search and discovery; specialties, locations, languages, credentials where applicable, services, availability, consultation types and pricing; appointment booking lifecycle; patient and doctor dashboards; notifications; online communication; advanced translation; payments where applicable; privacy/security; administration; auditability; and reporting/abuse mechanisms.
+A default discovery card contains **only** doctor photo, doctor name, specialty, and location. It is not a miniature profile. Biography, credentials, languages, reviews, pricing, availability, badges, statistics, and other detail are progressively disclosed on the public doctor profile or booking workflow.
 
-Not yet decided: initial markets/locales, medical scope and regulatory posture, credential-verification rules, consultation record/recording policy, payment model, supported currencies, pricing/refund policy, review policy, provider stack, and native/mobile clients.
+## MVP workflow and scope
 
-## Success measures
+The first real journey is:
 
-- A patient can locate and understand an eligible doctor and book an appropriate consultation in a supported language.
-- A doctor can safely maintain accurate public information and availability without administrative data intervention.
-- Appointment, payment, verification, moderation, and privacy-sensitive actions are authorized, attributable, and reviewable.
-- Eligible public doctor and discovery content is indexable and localized; patient, booking, consultation, and dashboard data is protected from indexing.
+**Visitor → discover doctor → view doctor profile → choose consultation type → select valid availability → book → confirmation → protected consultation entry.**
 
-## Assumptions to validate
+MVP includes public approved doctor discovery/profile pages; patient, doctor, and administrator accounts/roles; doctor profile creation and publication moderation; specialties, locations, medical services, consultation types, availability and exceptions; appointment booking; notification intents; protected video/chat/in-person entry; UI localization; approved public-content translations; audit events; and responsive accessible web UI.
 
-- Patients and doctors need cross-language understanding at more than one point in the care journey.
-- The platform may facilitate healthcare interactions without itself becoming the system of record for clinical care; the legal and operational boundary is open.
-- Video, chat, and in-person appointment workflows have distinct safety, privacy, scheduling, and provider requirements.
-- Payments apply only to markets/services where the model, tax, refund, and compliance obligations have been defined.
+The initial implementation locale set is **English (`en`) and Spanish (`es`)**. The technical foundation must use a locale registry so further locales can be enabled without redesign. Public doctor content may be authored in either supported locale and translated through the documented review/provenance model.
 
-## Product design direction
+MVP deliberately excludes payment collection, KYC, identity verification, professional licensing verification, organization/clinic verification, reviews, recordings, attachments, clinical notes, EHR features, external calendar synchronization, waitlists, multi-practitioner capacity, payouts, SMS, and native applications.
 
-The UI must be minimal, modern, clean, professional, trustworthy, and low-visual-noise. Use generous whitespace, clear typography, restrained hierarchy, simple layouts, and restrained color; avoid highly saturated color and visually overloaded interfaces.
+## Explicitly separate workflows
 
-### Discovery-card rule
+Account registration, doctor profile creation, publication approval/moderation, and future professional verification/KYC are separate workflows. MVP requires registration, profile creation, and publication moderation. Publication is a content/operational approval, not proof of identity, credentials, licence, or clinic status.
 
-A default doctor discovery card contains only doctor photo, doctor name, specialty, and location. It is a scanning aid, not a miniature profile. Biography, credentials, languages, detailed services, consultation details, availability, reviews, and pricing appear progressively on the doctor profile or the relevant booking workflow. Do not add badges, icons, statistics, metadata, or decoration merely because data exists.
+## Product boundaries
 
-## MVP boundary
-
-MVP delivers one coherent journey: visitor discovers a doctor; views a public profile; chooses video, online chat, or in-person consultation; selects availability; books; receives confirmation; and attends. It includes patient and doctor accounts, doctor profile creation, publication approval/moderation, directory filtering, availability, appointments, notifications, and protected consultation entry.
-
-MVP excludes KYC, identity verification, professional licensing verification, organization/clinic verification, recording, calendar synchronization, reviews, payout flows, and enterprise infrastructure. Account registration, doctor profile creation, publication approval/moderation, and future verification are distinct. Future verification is an extension point, not an MVP prerequisite.
+- A consultation is an appointment-authorized interaction, not a clinical record.
+- Translation never widens access to private source content.
+- Public pages include only approved publication-safe data; appointments, dashboards, communications, payment flows, administration, and protected assets are private.
+- The first implementation validates the no-payment journey. Any future commercial launch requires a separate commercial, tax, refund, and provider ADR.
+- Production availability in a jurisdiction requires applicable legal/compliance review; this does not block implementation of the technical foundation or controlled non-production MVP work.
 
 ## First vertical slice
 
-The first vertical slice is the MVP journey above for one selected market, locale, currency policy, and service category. It requires Patient, Doctor, Doctor Profile, Specialty, Location, Medical Service, Consultation Type, Availability, Appointment, Notification, Audit Event, and optional Payment Intent concepts; public doctor/profile and discovery screens; patient and doctor dashboard booking views; and an administrative publication view.
+| Area | Slice definition |
+| --- | --- |
+| Screens | Localized public discovery, public doctor profile, sign-in/registration, booking, confirmation, patient and doctor appointment views, video/chat/in-person entry, and admin publication queue. |
+| Entities | Account, Patient, Doctor, Doctor Profile, Specialty, Location, Medical Service, Consultation Type, Availability Rule/Exception, Appointment/Hold, Consultation, Conversation/Message, Localized Content/Translation, Notification, Audit Event. |
+| Permissions | Public reads approved profiles only; patients book/read their own appointments; doctors manage only their own profile/availability/appointments; operators publish profiles; consultation access is appointment-scoped. |
+| Services | Directory query, profile publication, availability expansion, booking hold/confirmation, appointment transition, consultation access grant, chat message append, notification dispatch, audit recording. |
+| Data/integrity | PostgreSQL constraints and transactions enforce publication, ownership, idempotency, and no double booking. |
+| Quality gates | The six mandatory hard gates and full thresholds in the technical specification apply. |
+| Excluded | All explicitly Post-MVP capabilities above, provider-specific integrations beyond replaceable adapters, and protected-content machine translation. |
 
-Server capabilities are public publication-safe rendering, authenticated role-aware actions, time-zone-aware availability evaluation, atomic appointment creation, appointment notifications, protected consultation entry, and audit events. It excludes payments unless the product decision requires them, translation of protected communication, recordings, attachments, external calendar sync, KYC/verification, reviews, and provider-specific integrations.
+## Success measures
+
+The MVP is successful only when its mandatory acceptance thresholds pass: a public doctor can be discovered, a patient can book a genuinely available slot without double booking, each consultation mode is correctly protected, private data remains private, and public SEO pages are crawlable while private pages are not. 【Technical specification: MVP Acceptance Thresholds】
