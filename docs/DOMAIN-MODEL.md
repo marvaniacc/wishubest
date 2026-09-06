@@ -1,49 +1,44 @@
 # Domain model
 
-## Modeling rules
+## Modeling principles
 
-Domain names below are canonical until changed in place. Persist authoritative business state in application-owned records; treat external-provider identifiers and events as integration data, not as the sole source of truth. All state transitions require authorization and auditable timestamps/actors where sensitive.
+This model is doctor-consultation specific, not a generic marketplace model. Application records own business truth; provider identifiers/events are integration evidence. Sensitive patient, appointment, and communication data require purpose-limited access, retention rules, and auditability. Exact clinical/legal responsibilities remain open pending jurisdiction and policy analysis.
 
-## Core entities
+## Bounded contexts and entities
 
-| Entity | Purpose and key relationships |
+| Context | Entities and ownership |
 | --- | --- |
-| Account | Authentication identity and security lifecycle; may have one or more roles and a member profile. |
-| Profile | Member-controlled public/private profile attributes, preferences, locale, and accessibility settings. |
-| Role assignment | Time-bounded grant of member, host, moderator, support, or administrator capability. |
-| Experience | A host-owned video-centered offering with draft, review, published, retired, and archived lifecycle states. |
-| Experience localization | A locale-specific rendering of eligible Experience fields, linked to source version and translation provenance. |
-| Session/occurrence | A scheduled or on-demand instance of an Experience; carries access, capacity, and provider-session references. |
-| Participation | A member's requested, confirmed, cancelled, attended, or revoked relationship to an occurrence. |
-| Access entitlement | The evaluated authorization fact that grants a subject access to protected experience capability for a bounded period. |
-| Payment/order | Commercial record of a purchase attempt and its pending, authorized, paid, refunded, failed, or disputed state. |
-| Provider transaction | Idempotent external payment/video/realtime/translation callback or request record, linked to its internal aggregate. |
-| Translation | A translation job/result with source content version, target locale, provenance, review status, and provider reference. |
-| Content/report | User-authored content or a report against a subject, including category, evidence references, confidentiality, and status. |
-| Moderation case/action | A governed investigation and its warning, restriction, removal, escalation, or closure actions. |
-| Privacy request | Access, correction, deletion, or export request with verified subject, lawful/policy outcome, and fulfillment state. |
-| Audit event | Append-oriented record of significant actor/system action, affected resource, time, outcome, and safe context. |
-| Notification | A localized, preference-aware delivery intent and outcome; provider delivery remains an adapter concern. |
+| Identity and access | **Account**, role assignment, session, consent/preference. An account may act as a patient, doctor, or authorized operator; privileged roles are explicitly assigned. |
+| Patient | **Patient profile** contains only necessary identity/contact/preference attributes and is controlled by the patient subject to policy. |
+| Doctor directory | **Doctor profile**, specialty, medical service, location/clinic association, spoken language, public content, credential, verification. A doctor owns submitted profile data; verification/publication is governed by administration. |
+| Scheduling and booking | **Availability schedule**, availability slot/exception, appointment, booking hold, appointment participant. The appointment is the authoritative relationship between patient, doctor, selected service/type, scheduled time, and lifecycle state. |
+| Consultation and communication | **Consultation**, consultation type (video, online chat, in-person), conversation, message, attachment reference, provider-session reference. A consultation is authorized by an eligible appointment; external sessions do not replace appointment state. |
+| Translation and localization | **Localized content**, translation request/result, terminology/context reference. Each translated artifact links to source version, locale, provenance, review state, and stale state. |
+| Commerce | **Order/payment**, refund, invoice/tax record where required, provider transaction. Internal state is idempotent and authoritative for access/booking decisions. |
+| Operations | Notification, report, administrative case, moderation action, privacy request, audit event. Access is least privilege and actions/reasons are attributable. |
 
-## Relationship and lifecycle rules
+## Core relationships and lifecycle rules
 
-- An Experience has one accountable host and may have many localizations and occurrences.
-- A Participation must refer to one account and one occurrence; confirmation requires current eligibility and, where applicable, a valid paid entitlement.
-- Access decisions derive from server-evaluated entitlement, role, occurrence state, and policy; never from a URL or client claim alone.
-- Source content changes invalidate or mark related translations stale until reviewed/replaced.
-- A report creates or joins a moderation case according to policy; case actions must be attributable and should not expose reporter identity beyond authorized roles.
-- External callbacks are stored and processed idempotently before changing internal lifecycle state.
-- Privacy requests and destructive actions must preserve only the minimum lawful audit evidence and respect retention policy.
+- A doctor has one governed professional profile and may have many specialties, services, languages, locations, credential records, availability schedules, and public localizations.
+- Credential and verification states are distinct from profile draft/published/retired states. A public claim is published only when policy permits.
+- An appointment belongs to one patient and one doctor and references one consultation type, one selected service where applicable, a scheduled time interval/time zone, and a lifecycle such as draft hold, requested, confirmed, rescheduled, cancelled, completed, no-show, or exception. Exact transitions are policy decisions.
+- Availability is doctor-controlled subject to policy; booking must prevent invalid or conflicting reservations under concurrent requests. Holds and external calendar synchronization need explicit design.
+- A consultation is created only for an authorized appointment and has a separate preparation/active/ended/access-expired lifecycle. Recording, notes, attachments, and retention are open decisions.
+- Conversations/messages are private to authorized participants and operators with a defined purpose. Translation does not broaden access to source content.
+- A source update marks related translations stale; machine and human translations are distinguishable and reviewable.
+- Payment status can affect booking confirmation only according to accepted commercial policy. Provider callbacks are verified and idempotent.
+- Reports may concern accounts, doctor profile content, messages, appointments, or other governed resources; actions must preserve appropriate confidentiality and audit evidence.
 
 ## Data classification
 
 | Class | Examples | Handling |
 | --- | --- | --- |
-| Public | Published experience metadata and approved localized pages. | Indexable only when publish policy permits. |
-| Member-private | Profile fields, preferences, participation history. | Authorize per subject/role; omit from public indexes/logs. |
-| Restricted | Reports, moderation evidence, payment references, privacy requests. | Least privilege, audit access, defined retention. |
-| Sensitive integration data | Tokens, webhook secrets, provider payload fragments. | Encrypt/protect, redact logs, minimize retention and access. |
+| Public | Approved doctor profile, specialties, services, eligible locations, localized discovery content. | Index only when publication policy permits. |
+| Private/personal | Patient profile, preferences, appointment history, availability administration. | Purpose-limited authorization; exclude from public indexes and unsafe logs. |
+| Sensitive consultation | Chat, attachments, consultation metadata/content, health-related details if collected. | Minimize, protect, auditable access, defined consent/retention; legal requirements pending. |
+| Restricted operations | Credential evidence, verification, reports, payment references, privacy requests. | Least privilege, redaction, audit access, retention policy. |
+| Sensitive integration | Tokens, webhooks, provider payloads, secret configuration. | Protect/encrypt, minimize, redact logs, rotate and restrict access. |
 
 ## Open modeling decisions
 
-Identity verification, organization/team ownership, recording/media retention, refunds/payouts, consent artifacts, age gates, data residency, and the exact relationship between experiences and video sessions are not yet decided.
+Initial jurisdictions, patient data categories, doctor licensing/credential verification, clinics/organizations, cross-border care eligibility, scheduling recurrence/time-zone policy, calendar sync, consultation documentation/recording, reviews, refunds/payouts, retention, and emergency/escalation policy must be decided before implementation.

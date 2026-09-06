@@ -1,30 +1,30 @@
 # Roadmap
 
-Roadmap phases describe dependencies and decision gates, not delivery dates or commitments.
+Phases express dependency order and decision gates, not dates or delivery commitments.
 
 | Phase | Outcome | Dependencies |
 | --- | --- | --- |
-| 0 — Discovery and governance | Validated audience/problem, policy baseline, success measures, initial locales, and risk register. | Human decisions on market, jurisdiction, content policy, and scope. |
-| 1 — Foundation decisions | Accepted baseline architecture/data-store/identity/localization decisions and provider evaluation criteria. | ADRs, threat/privacy review, operational requirements, cost assumptions. |
-| 2 — Vertical-slice design | End-to-end design for discovery → join → protected participation, including translations and support paths. | Phase 1; concrete experience format, access rules, and acceptance criteria. |
-| 3 — Foundation implementation | Secure web foundation, domain model, localization catalog, authorization/audit primitives, and test/deploy approach. | Phase 2; selected implementation stack and operating environment. |
-| 4 — Experience workflow | Host publishing, localized discovery, participation, protected video integration, reporting, and operational workflow. | Video/realtime/translation provider decisions; governance and SEO validation. |
-| 5 — Commercial and scale readiness | Payment flow if required, privacy-rights operations, observability, resilience exercises, accessibility/SEO hardening. | Payments, hosting/cloud choices; legal/tax/retention and SLO decisions. |
-| 6 — Controlled launch and learning | Limited release, measured feedback, incident/support loop, and prioritised iteration. | Acceptance gates, production operations, support ownership, launch criteria. |
+| 0 — Product, market, and safety discovery | Defined initial patient/doctor segment, markets, medical/legal boundary, consultation scope, success measures, and risk register. | Human decisions on jurisdictions, care model, policies, and initial locales. |
+| 1 — Foundation decisions | Accepted identity/access, doctor verification, scheduling/booking lifecycle, data-store, translation, SEO, privacy/security, and provider evaluation criteria. | ADRs; legal/privacy/security review; operational and cost assumptions. |
+| 2 — Patient booking vertical-slice design | End-to-end design for localized doctor discovery → availability → booking → notification → authorized consultation entry/support. | Phase 1; service/pricing, time-zone, cancellation, and acceptance criteria. |
+| 3 — Foundation implementation | Secure web foundation, directory/appointment domain primitives, localization catalog, authorization/audit, test/deploy approach. | Phase 2; selected implementation stack and operating environment. |
+| 4 — Doctor directory and appointments | Governed doctor profiles, search/discovery SEO surface, scheduling, booking, dashboards, notifications, and operations. | Verification policy, SEO analysis, storage/messaging choices if needed. |
+| 5 — Consultation and translation | Authorized video/chat/in-person workflows, advanced translation, reporting, and privacy-safe provider integrations. | Video/realtime/translation choices; communication and retention policy. |
+| 6 — Commerce and launch readiness | Payments/refunds if applicable, observability, accessibility, resilience, privacy-rights operations, controlled release. | Commercial/tax policy; payment, hosting/cloud, email/SMS, and support decisions. |
 
 ## Dependency rules
 
-- Do not begin provider-dependent implementation before its evaluation is documented and any material choice is recorded in an ADR.
-- Do not make public pages indexable before localization, canonical URL, privacy, and content-governance requirements are testable.
-- Do not expose protected participation before server-side entitlement, audit, abuse reporting, and provider callback controls are designed.
-- Payment work depends on a defined commercial model, jurisdiction/tax responsibilities, refund policy, and provider evaluation.
-- Each phase exit updates PROJECT-STATE, development history, and affected durable documents.
+- Do not implement medical consultation or communications before the legal/safety/privacy, consent, retention, and authorization boundary is documented.
+- Do not implement appointment booking before time-zone, availability, booking-concurrency, cancellation/reschedule, and payment-confirmation policies are accepted.
+- Do not index public pages before doctor publication/verification, localization, canonical/hreflang analysis, privacy, and duplicate-content controls are testable.
+- Do not select or integrate a provider before its documented evaluation and material ADR.
+- Each phase exit updates PROJECT-STATE, development history, affected durable documents, and ADRs as appropriate.
 
 ## Near-term decision backlog
 
-1. Define the first experience format and target user segment.
-2. Select initial locales and translation quality/review policy.
-3. Evaluate Laravel/PHP + Livewire against alternatives or accept/reject it.
-4. Evaluate PostgreSQL and MySQL against the recorded criteria.
-5. Define video, realtime, translation, payments, hosting, and cloud evaluation plans.
-6. Define legal/privacy, security, accessibility, SEO, and operational acceptance gates.
+1. Define initial markets, patient/doctor segment, service categories, and the platform's medical/legal responsibility boundary.
+2. Define doctor credentials, verification, profile publication, reviews, and moderation policies.
+3. Define appointment/service lifecycle, availability, time-zone, cancellation, rescheduling, no-show, and consultation-entry rules.
+4. Select initial locales and translation terminology, review, disclosure, privacy, latency, caching, and persistence policy.
+5. Evaluate Laravel/PHP with Livewire, PostgreSQL vs MySQL, and provider criteria without selecting providers.
+6. Define public doctor SEO requirements, privacy/security controls, accessibility target, operations, and launch gates.

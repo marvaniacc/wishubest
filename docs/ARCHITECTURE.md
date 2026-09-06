@@ -2,37 +2,37 @@
 
 ## Evaluated direction (not implementation)
 
-Laravel/PHP with Livewire is the leading evaluated direction for a server-rendered, web-first application. It is **not selected or implemented**: no application code, framework scaffold, or provider integration is implied by this record. Its evaluation should test team fit, security posture, localization ergonomics, background jobs, realtime/video integration boundaries, testability, operational model, and accessibility-friendly rendering.
+Laravel/PHP with Livewire is a preferred direction to evaluate for a server-rendered, web-first WishUBest application. It is not selected or implemented. Evaluation must test security, authorization, localization, server-rendered SEO, scheduling/time-zone behavior, background jobs, realtime/video integration boundaries, accessibility, observability, team fit, and operational model.
+
+Do not impose WordPress, split frontend/backend, microservices, subdomains, directories, a URL scheme, SPA architecture, or another structural pattern without documented analysis.
 
 ## Intended system shape
 
-A modular web application should separate presentation, application workflows, domain rules, persistence, and external adapters. Public localized rendering, authenticated member/host workflows, and privileged operational workflows should share domain policies while maintaining distinct authorization and indexing boundaries. Background processing should handle non-interactive work such as notifications, translation jobs, media/provider callbacks, exports, and audit-safe retries.
+A modular application should separate public discovery rendering, patient/doctor workflows, administration, application services, domain rules, persistence, and external adapters. Bounded contexts likely include identity/access; doctor directory and verification; scheduling/appointments; consultations/communications; translation/localization; commerce; notifications; moderation/operations; and audit/privacy. Their exact boundaries remain subject to analysis.
 
-External capabilities must be represented behind application-owned interfaces/adapters so domain logic does not become dependent on a vendor SDK or payload shape.
+Server-side policies own authorization for protected doctor, patient, appointment, consultation, payment, and administrative data. Background jobs handle notifications, translation work, provider callbacks, availability processing, exports, and retry-safe integrations. Application-owned interfaces/adapters isolate video, realtime, translation, payment, storage, messaging, email/SMS, hosting, and cloud vendor protocols.
+
+## Architecture questions requiring analysis
+
+- How should appointment availability, holds, booking concurrency, cancellation/reschedule policy, waitlists, time zones, and calendar synchronization work?
+- What is the clinical and legal boundary for video/chat consultation, consultation notes, attachments, recording, emergency guidance, consent, retention, and access?
+- What realtime delivery, presence, ordering, latency, moderation, and persistence guarantees are necessary for chat and video workflows?
+- Which translation surfaces may process protected data, what consent/provenance/review rules apply, and which translations may persist or cache?
+- How should public doctor/search content be rendered and localized for crawlability without exposing private data or committing to a URL scheme?
+- What payment/refund/tax/currency/payout obligations apply, and who is merchant of record?
+- What international data residency, privacy, credential, medical advertising, age, and accessibility requirements apply?
 
 ## Data-store evaluation: PostgreSQL vs MySQL
 
 | Criterion | PostgreSQL | MySQL | Evaluation need |
 | --- | --- | --- | --- |
-| Relational integrity | Strong constraints and expressive relational features. | Mature relational constraints and broad operational familiarity. | Model expected transactional invariants. |
-| Querying/reporting | Rich query, indexing, JSON, and search-adjacent capabilities. | Strong conventional relational performance and ecosystem support. | Benchmark representative discovery, moderation, and reporting queries. |
-| Laravel operations | First-class support. | First-class support and common hosting availability. | Compare migration, backup, monitoring, and team experience. |
-| Scaling/cost | Depends on managed service and workload. | Depends on managed service and workload. | Price realistic environments and recovery objectives. |
+| Appointment correctness | Strong constraints and expressive transactional features. | Mature relational guarantees and broad operational familiarity. | Model booking holds, overlap prevention, and concurrency. |
+| Directory/search/reporting | Rich query, indexing, JSON, and search-adjacent capabilities. | Strong conventional relational performance and ecosystem support. | Benchmark doctor discovery, availability, moderation, and reporting queries. |
+| Laravel operations | First-class support. | First-class support and broad hosting availability. | Compare migrations, backups, monitoring, recovery, and team familiarity. |
+| Scaling/cost | Depends on workload and managed offering. | Depends on workload and managed offering. | Price realistic international, recovery, and compliance needs. |
 
-No database is selected. Choose only after recorded evaluation against correctness, operations, recovery, performance, compliance/region needs, and total cost—not familiarity alone.
+No database is selected. Select only after recorded comparison of correctness, operations, recovery, performance, compliance/region needs, and total cost.
 
 ## Explicitly open provider decisions
 
-Provider choices for **video, realtime, translation, payments, hosting, and cloud** are open. Each requires a documented evaluation covering functional fit, security/privacy and data residency, reliability/SLA, accessibility/localization support, observability, portability/exit strategy, cost, contract/compliance, and operational burden.
-
-## Material open questions
-
-1. What experience formats, concurrency, recording, and moderation controls does video require?
-2. Which realtime interactions are essential, and what latency/order/delivery guarantees are needed?
-3. Which locales launch first, what translation quality threshold applies to each surface, and where is human review required?
-4. Which jurisdictions, age/identity constraints, retention schedules, consent rules, and data-residency requirements apply?
-5. What payment models, tax responsibilities, refunds, payouts, and marketplace obligations exist?
-6. What availability, disaster-recovery, audit, analytics, and support-response targets are required?
-7. What content governance rules define eligibility, reports, appeals, and enforcement?
-
-Answers must update this architecture, the technical specification, domain model, roadmap, and an ADR when materially consequential.
+Video, realtime, translation, payments, hosting, cloud, storage, messaging, and email/SMS providers are open. Each evaluation must cover functional fit, patient-data/privacy and residency, reliability/SLA, security, accessibility/localization, observability, portability/exit strategy, cost, contracts/compliance, and operational burden.

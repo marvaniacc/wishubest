@@ -1,44 +1,46 @@
 # Product blueprint
 
-## Product intent
+## Product definition
 
-Build a multilingual, privacy-conscious platform for people to create, discover, and participate in video-centered experiences across language boundaries. The product must make the primary journey understandable and usable regardless of a participant's preferred supported language.
+WishUBest is a multilingual, international doctor discovery, appointment booking, and medical consultation platform. It connects patients with doctors across language boundaries so patients can understand a doctor's professional profile, specialties, languages, locations, services, availability, consultation options, and applicable pricing before booking care.
+
+The core consultation modes are video consultation, online chat consultation, and in-person consultation. Translation is a product differentiator across public information and permitted patient/doctor communication; it is not limited to interface strings.
 
 ## Users and outcomes
 
 | User | Primary outcome |
 | --- | --- |
-| Visitor | Understand the offering, discover relevant public content, and evaluate trustworthiness. |
-| Member | Create and maintain a profile, participate in eligible experiences, and control personal data. |
-| Host/creator | Publish and manage an experience, communicate with participants, and understand participation. |
-| Moderator/support operator | Review reports, apply policy actions, and help users without excessive data access. |
-| Administrator | Configure governed product settings, access audit evidence, and manage operational risk. |
+| Visitor | Find trustworthy, localized public doctor information and understand available care options. |
+| Patient | Discover an appropriate doctor, book and manage a consultation, communicate safely, and control personal information. |
+| Doctor | Maintain a professional presence, define offerings and availability, manage appointments, and communicate with patients. |
+| Administrator | Govern users, doctors, bookings, payments, content, moderation, configuration, and operational issues. |
+| Support/moderation operator | Resolve reports and support cases using least-privilege, auditable access. |
 
 ## Core workflows
 
-1. **Discover:** a visitor arrives from search, direct link, or referral; sees localized, indexable public information; filters or navigates to an experience; and sees eligibility, language, price, and trust information before commitment.
-2. **Join:** a member authenticates, supplies only required profile information, selects language/accessibility preferences, accepts applicable terms, completes any required payment, and receives a confirmed participation state.
-3. **Create and publish:** a host drafts content, declares supported languages, adds localized metadata, sets access and pricing rules, previews the public representation, and publishes subject to governance.
-4. **Participate live or asynchronously:** an eligible participant enters a protected video-related experience, receives permitted realtime updates and translated content, and can report abuse or leave.
-5. **Moderate and support:** an operator reviews a report or request with least-privilege access, records an action and reason, communicates an outcome, and preserves an auditable trail.
-6. **Manage account and privacy:** a member changes preferences, downloads eligible data, requests correction/deletion where applicable, and sees the state of that request.
+1. **Discover a doctor:** a visitor searches or browses public doctor profiles and specialty/location pages; filters by specialty, location, language, consultation type, availability, and applicable price; and understands credentials and service information in a supported locale.
+2. **Book a consultation:** a patient authenticates or creates an account, selects a doctor, service, consultation type, available time, preferred language, and required details; reviews price/terms; completes payment where applicable; and receives a confirmed or pending booking.
+3. **Prepare and attend:** a patient and doctor receive appropriate notifications, manage a booking within policy, and enter the authorized video, chat, or in-person consultation flow. Consultation communications are private and are never public search content.
+4. **Doctor practice management:** a doctor completes profile and professional verification requirements, manages specialties/services/pricing/locations/languages, maintains availability, and acts on appointment changes.
+5. **Administrative governance:** authorized staff review doctor verification, reported content/conduct, operational exceptions, bookings, payments, and configuration; actions and reasons are auditable.
+6. **Privacy and account management:** patients and doctors manage preferences, language settings, data requests, and communication consent subject to applicable policy and law.
 
-## Product boundaries
+## Product requirements and boundaries
 
-In scope: accounts and roles; public discovery; experience publishing and participation; multilingual content; policy/reporting; payments when required; operational administration.
+Required capabilities: multilingual UX; international users; public doctor profiles; doctor search and discovery; specialties, locations, languages, credentials where applicable, services, availability, consultation types and pricing; appointment booking lifecycle; patient and doctor dashboards; notifications; online communication; advanced translation; payments where applicable; privacy/security; administration; auditability; and reporting/abuse mechanisms.
 
-Not yet committed: exact video format, synchronous interaction mechanics, monetization model, provider stack, supported locales, geographic launch sequence, and native/mobile clients.
+Not yet decided: initial markets/locales, medical scope and regulatory posture, credential-verification rules, consultation record/recording policy, payment model, supported currencies, pricing/refund policy, review policy, provider stack, and native/mobile clients.
 
-## Measures of success
+## Success measures
 
-- A user can discover, understand, and complete the primary participation path in a supported locale.
-- Hosts can publish complete, policy-compliant experiences without manual data intervention.
-- Moderation, payment, and privacy-sensitive actions are attributable and reviewable.
-- Search engines can index canonical eligible public pages without indexing private, personalized, or protected views.
+- A patient can locate and understand an eligible doctor and book an appropriate consultation in a supported language.
+- A doctor can safely maintain accurate public information and availability without administrative data intervention.
+- Appointment, payment, verification, moderation, and privacy-sensitive actions are authorized, attributable, and reviewable.
+- Eligible public doctor and discovery content is indexable and localized; patient, booking, consultation, and dashboard data is protected from indexing.
 
 ## Assumptions to validate
 
-- Video-mediated experiences are the central value-delivery mechanism.
-- Translation is needed for both authored content and participant-facing interactions, with quality and disclosure requirements varying by context.
-- A web-first product can validate the initial market.
-- Some experiences may require payment, but no payment model is selected.
+- Patients and doctors need cross-language understanding at more than one point in the care journey.
+- The platform may facilitate healthcare interactions without itself becoming the system of record for clinical care; the legal and operational boundary is open.
+- Video, chat, and in-person appointment workflows have distinct safety, privacy, scheduling, and provider requirements.
+- Payments apply only to markets/services where the model, tax, refund, and compliance obligations have been defined.
