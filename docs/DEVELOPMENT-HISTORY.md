@@ -1,5 +1,9 @@
 # Development history
 
+## 2026-09-06 — Documentation history merge resolved
+
+Resolved add/add conflicts between the merged documentation history and the corrected WishUBest foundation. Retained the canonical doctor/patient, appointment, consultation, translation, SEO, privacy, and open-decision documentation in place.
+
 ## 2026-09-06 — WishUBest foundation corrected
 
 Corrected the permanent documentation foundation after the initial generic marketplace interpretation was identified as inaccurate. The canonical product is now a multilingual, international doctor discovery, appointment booking, and medical consultation platform for video, online chat, and in-person consultations.

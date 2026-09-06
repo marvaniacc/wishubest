@@ -2,8 +2,8 @@
 
 ## Last commit
 
-- **Commit:** **HEAD** — Complete WishUBest documentation consistency audit (this commit).
-- **Previous documentation baseline:** eb60461 — docs: correct WishUBest medical platform foundation.
+- **Commit:** **HEAD** — Merge permanent WishUBest documentation histories and resolve add/add conflicts (this commit).
+- **Previous documentation baseline:** cbde5e2 — docs: complete WishUBest consistency audit; merged with origin/main documentation history.
 - **Repository state at HEAD:** documentation-only planning repository; the permanent documents now define WishUBest as a multilingual doctor discovery, appointment booking, and medical consultation platform. No application code, dependencies, migrations, or test suite exist.
 - **Update rule:** after every commit, update this section in place so it identifies the new HEAD and accurately describes that committed state.
 
