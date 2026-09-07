@@ -2,51 +2,28 @@
 
 ## Status
 
-codex/explain-codebase-structure-and-learning-path-govsip
-Phase 1 Milestone 1 is complete. WishUBest now has a Laravel 13 + Livewire 4.4 server-rendered modular-monolith foundation with PostgreSQL-backed tests, first-party authentication, roles/capabilities, `en`/`es` catalogs, queue/session/cache defaults, and passing baseline feature tests. The product remains a multilingual doctor discovery, appointment booking, and medical consultation platform—not a generic marketplace or EHR.
+Phase 1 Milestone 2 is complete and verified. WishUBest has a Laravel + Livewire server-rendered modular monolith with PostgreSQL-backed tests, first-party authentication, roles/capabilities, `en`/`es` catalogs, and a doctor directory/publication slice. The full suite passes with 16 tests and 81 assertions against PostgreSQL.
 
 ## What is implemented
 
-- PostgreSQL is the configured local/test database. PHPUnit uses `wishubest_test` with the `pgsql` driver and verifies a PostgreSQL query/migration path.
-- Patient self-registration, sign-in, sign-out, session regeneration/invalidation, validation, and rate limiting are implemented.
-- `UserRole` defines patient, doctor, administrator, and moderator. `access-administration` and `moderate-doctor-profiles` gates are enforced server-side through `can` middleware; protected routes have feature coverage.
-- English and Spanish authentication/dashboard translation catalogs exist and are tested.
-- Laravel database queue/session/cache defaults and log mailer baseline are configured. No provider SDK was selected.
+- Milestone 1 foundation: PostgreSQL configuration, first-party patient registration/sign-in/sign-out, secure session handling, rate limits, explicit roles, and server-side gates.
+- Doctor accounts own one Doctor record and one Doctor Profile. Profiles have explicit `draft`, `submitted`, `approved`, `rejected`, and `retired` states.
+- Specialty, Location, and Medical Service are controlled relational references. Doctor authoring validates active references and can submit a complete profile for review.
+- Administrators and moderators can approve/reject submitted profiles through protected server-side authorization; moderators remain unable to use administrator-only routes.
+- Locale-prefixed `/en/doctors` and `/es/doctors` SSR directory/profile routes show approved profiles only. Directory cards contain only photo, name, specialty, and location.
 
 ## What is not implemented
 
-Do not infer product functionality from the foundation. Doctor profiles/publication, discovery/SEO, scheduling/availability/booking, notifications, consultations, public-content translation records, payments, KYC/verification, recordings, attachments, calendar sync, and providers are not implemented.
+Scheduling, availability, slots, bookings, appointments, notifications, consultations, public-content translation records, payments, KYC/verification, recordings, attachments, calendar sync, and providers are not implemented.
 
 ## Begin next
 
-Implement **Milestone 2 — doctor directory and publication**. Add Doctor and Doctor Profile domain records, controlled Specialty/Location/Medical Service references, doctor-only profile authoring, administrator/moderator approval/rejection, approved-only public visibility, locale-prefixed SSR public routes, and tests for doctor/admin/moderator/patient/public boundaries. Do not start scheduling or booking in that milestone.
-
-Preserve locked decisions: Laravel/Livewire modular monolith, PostgreSQL, first-party sessions, server-side policies/capabilities, `en`/`es`, minimal four-field discovery cards, no payment first slice, no KYC, and provider adapters only. Do not add project `SKILL.md` files yet; reassess after the scheduling and authorization domains show a reusable, project-specific workflow.
+Implement **Milestone 3 — scheduling and booking**. Add doctor-local recurring availability and exceptions, timezone-safe display/storage, PostgreSQL-backed conflict protection, booking holds, and the documented appointment lifecycle. Do not add payments, providers, KYC, or consultation functionality.
 
 ## Test commands
 
-Run `php artisan test` for the PostgreSQL-backed feature suite and `vendor/bin/pint --test` for formatting. Ensure PostgreSQL is running and the `wishubest_test` database/user from `.env.example`/`phpunit.xml` are available; do not substitute SQLite.
+Run `php artisan test` for the PostgreSQL-backed feature suite and `vendor/bin/pint --test` for formatting. The verified environment uses PHP 8.5 CLI with `pdo_pgsql` enabled and PostgreSQL 16; do not substitute SQLite.
 
 ## Non-blocking legal/compliance boundary
 
-Technical foundation and controlled MVP implementation may continue. Before public production launch in a jurisdiction, obtain applicable review for medical-practice scope, privacy/retention/consent, advertising/credential claims, and emergency guidance. Keep the MVP non-EHR, data-minimizing, and free of protected-content translation.
-
-**DOCUMENTATION COMPLETE — READY FOR IMPLEMENTATION.** WishUBest is a multilingual doctor discovery, appointment booking, and medical consultation platform for video, online chat, and in-person consultations. It is not a generic marketplace or EHR.
-
-## Begin here
-
-1. Read `README.md`, this handoff, [Architecture](ARCHITECTURE.md), [Domain model](DOMAIN-MODEL.md), [Technical specification](TECHNICAL-SPECIFICATION.md), and accepted ADRs.
-2. Begin Phase 1 implementation: Laravel/PHP + Livewire modular monolith, PostgreSQL, first-party sessions, roles/policies, migrations, test harness, queue/scheduler, and `en`/`es` catalogs.
-3. Implement the first vertical slice in roadmap order and write tests against every mandatory acceptance threshold—especially concurrency, timezone, authorization/privacy, and public/private SEO boundaries.
-4. Preserve the minimal four-field doctor-card rule. KYC and all verification are out of MVP; profile publication moderation is required and is not verification.
-5. Keep video, translation, email, storage, and hosting behind adapters. Do not send protected content to translation services. Do not add payments to the first slice.
-6. Update canonical documentation, development history, and `PROJECT-STATE.md` after every commit. Record material deviations with a sequential ADR.
-
-## Non-blocking legal/compliance boundary
-
-Technical foundation and controlled MVP implementation may begin. Before public production launch in a jurisdiction, obtain applicable review for medical-practice scope, privacy/retention/consent, advertising/credential claims, and emergency guidance. Keep the implemented MVP within its non-EHR, data-minimizing, no-protected-content-translation boundary.
-
-## Do not reopen/defer implementation for
-
-Laravel/Livewire, PostgreSQL, scheduling model, locale strategy, SEO strategy, payment exclusion, KYC exclusion, or the final readiness gate: these are accepted. Post-MVP items are listed in [Roadmap](ROADMAP.md#post-mvp).
-main
+Before public production launch in a jurisdiction, obtain applicable review for medical-practice scope, privacy/retention/consent, advertising/credential claims, and emergency guidance. Keep the MVP non-EHR, data-minimizing, and free of protected-content translation.

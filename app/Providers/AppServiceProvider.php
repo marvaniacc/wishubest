@@ -23,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
             ->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
         RateLimiter::for('registration', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));
 
+        Gate::define('author-doctor-profile', fn (User $user): bool => $user->role === UserRole::Doctor);
+
         Gate::define('access-administration', fn (User $user): bool => $user->role === UserRole::Administrator);
         Gate::define('moderate-doctor-profiles', fn (User $user): bool => in_array(
             $user->role,

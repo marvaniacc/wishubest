@@ -2,57 +2,30 @@
 
 ## Last commit
 
-codex/explain-codebase-structure-and-learning-path-govsip
-- **Commit:** **HEAD** — Phase 1 foundation: Laravel, Livewire, PostgreSQL test path, first-party authentication, roles/capabilities, and localization (this commit).
-- **Repository state:** Laravel 13.30.1 + Livewire 4.4 modular-monolith foundation is implemented. PostgreSQL is the configured local and test database; the PHPUnit suite executes migrations and queries against `wishubest_test`, never SQLite. First-party authentication, secure session rotation/invalidation, rate limits, explicit roles/capabilities, `en`/`es` catalogs, database queue/session/cache configuration, and baseline feature tests are in place.
+- **Commit:** **HEAD** — Phase 1 Milestone 2 doctor directory and publication (this commit).
+- **Repository state:** The Laravel/Livewire PostgreSQL foundation includes doctor/profile ownership, controlled directory references, publication moderation, and localized server-rendered public doctor discovery. Milestone 2 was verified with the PHP 8.5 CLI `pdo_pgsql` extension enabled and PostgreSQL 16 test migrations/connections.
 - **Update rule:** Update this section in the same commit after every commit so it identifies that commit and accurately describes the repository state.
 
 ## Implemented baseline
 
 | Area | State |
 | --- | --- |
-| Application architecture | Laravel/PHP + Livewire server-rendered modular-monolith foundation implemented. |
-| Database | PostgreSQL configured in `.env.example`; test suite uses PostgreSQL `wishubest_test` and verifies migrations/queries. |
-| Authentication | First-party patient registration, sign-in, sign-out, session regeneration/invalidation, and login/registration rate limiting implemented. |
-| Authorization | `patient`, `doctor`, `administrator`, and `moderator` roles implemented as a typed enum; server-side gates and `can` middleware protect administration/moderation routes. |
-| Localization | Versioned `en` and `es` authentication/dashboard catalogs implemented and tested. |
-| Operations | Database session/cache/queue defaults, scheduler-ready Laravel foundation, log mailer default, and application logging configuration are present. |
-| Tests | 11 PHPUnit tests pass against PostgreSQL: authentication, rate limiting, protected-route/role boundaries, localization catalogs, and database path. |
+| Foundation | Laravel/Livewire SSR modular monolith, PostgreSQL test path, first-party authentication, roles, rate limits, and `en`/`es` catalogs. |
+| Directory domain | `Doctor` owns one `DoctorProfile`; controlled Specialty, Location, and Medical Service records are connected through relational pivots. |
+| Publication | Explicit `draft`, `submitted`, `approved`, `rejected`, and `retired` states; doctors submit, and administrators/moderators review. |
+| Authorization | Doctors can manage only their own profiles; patient authoring is denied; administrator-only administration remains separate from moderator publication capability. |
+| Public directory | Locale-prefixed `/en/doctors` and `/es/doctors` directory/profile routes render only approved profiles and preserve the four-field card rule. |
+| Tests | `php artisan test` passes: 16 tests and 81 assertions against PostgreSQL. Coverage includes profile ownership, controlled-reference validation, moderation, public visibility, and locale routes. |
 
 ## Not implemented
 
-Doctor profiles, publication moderation workflow, specialties/locations/services, public discovery/SEO pages, availability, scheduling, bookings, notifications, consultations, translated public content records, payments, KYC, and providers remain unimplemented. They are not represented by placeholder product features.
+Scheduling/availability/slots, bookings, appointments, notifications, consultations, translated public-content records, payments, KYC, verification, recordings, attachments, calendar synchronization, and providers remain out of scope.
 
 ## Next action
 
-Implement **Milestone 2 — doctor directory and publication**: Doctor/Doctor Profile, controlled specialties/locations/services, doctor-only authoring, administrator/moderator publication decisions, approved-only server-rendered public profile/discovery routes, and corresponding authorization/public-private visibility tests. Preserve the minimal four-field doctor-card rule and locale-prefixed SEO route plan.
+Implement **Milestone 3 — scheduling and booking**: availability rules/exceptions, local-time/timezone behavior, PostgreSQL conflict protection, booking holds and appointment lifecycle. Preserve publication visibility and authorization boundaries.
 
 ## Risks and blockers
 
-- No product/technical blocker prevents Milestone 2.
-- PostgreSQL must be available to run tests; the suite intentionally does not fall back to SQLite.
-- Legal/compliance review remains required before public production launch, as documented; it does not block foundation or directory implementation.
-- **Commit:** **HEAD** — documentation completion and implementation-readiness finalization (this commit).
-- **Repository state:** Documentation-only repository, now **DOCUMENTATION COMPLETE — READY FOR IMPLEMENTATION**. No application code, dependencies, migrations, or test suite have been added by this documentation milestone.
-- **Update rule:** Update this section in the same commit after every commit so it identifies that commit and accurately describes the repository state.
-
-## Accepted implementation baseline
-
-| Area | State |
-| --- | --- |
-| Application architecture | Accepted: Laravel/PHP + Livewire modular monolith with SSR. |
-| Database | Accepted: PostgreSQL. |
-| First slice | Public discovery → profile → availability → booking → confirmation → protected consultation entry. |
-| Locales | Accepted MVP UI/public content scope: `en` and `es`. |
-| Scheduling | Accepted local-time rules/exceptions, UTC appointment instants, holds, transaction/constraint concurrency protection, state machine. |
-| Consultation | Accepted appointment-scoped video adapter, private persisted chat/polling, and in-person workflow. |
-| SEO | Accepted locale-prefixed public SSR URLs, canonical/hreflang/sitemap strategy, private non-indexable boundary. |
-| Payments | Excluded from first slice; Post-MVP. |
-| KYC/verification | Excluded from MVP; publication moderation remains required. |
-| Providers | Adapter-based and unselected; no provider selection blocks implementation. |
-| Legal/compliance | Required before public jurisdiction launch, but does not block technical foundation. |
-
-## Next action
-
-Begin Roadmap Phase 1 implementation and create tests that will enforce the full [MVP Acceptance Thresholds](TECHNICAL-SPECIFICATION.md#mvp-acceptance-thresholds).
-main
+- Verification environment: PHP 8.5 CLI has `pdo_pgsql` enabled and PostgreSQL 16 is reachable for `wishubest_test`; the suite intentionally does not fall back to SQLite.
+- Legal/compliance review remains required before public production launch, but does not block controlled MVP implementation.
