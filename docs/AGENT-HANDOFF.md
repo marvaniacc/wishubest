@@ -2,7 +2,11 @@
 
 ## Status
 
+codex/explain-codebase-structure-to-newcomers-rouu46
 Phase 1 Milestone 2 is complete and verified. WishUBest has a Laravel + Livewire server-rendered modular monolith with PostgreSQL-backed tests, first-party authentication, roles/capabilities, `en`/`es` catalogs, and a doctor directory/publication slice. The full suite passes with 16 tests and 81 assertions against PostgreSQL.
+
+Phase 1 Milestone 2 is complete. WishUBest has a Laravel + Livewire server-rendered modular monolith with PostgreSQL-backed tests, first-party authentication, roles/capabilities, `en`/`es` catalogs, and a doctor directory/publication slice.
+main
 
 ## What is implemented
 
@@ -22,7 +26,11 @@ Implement **Milestone 3 — scheduling and booking**. Add doctor-local recurring
 
 ## Test commands
 
+codex/explain-codebase-structure-to-newcomers-rouu46
 Run `php artisan test` for the PostgreSQL-backed feature suite and `vendor/bin/pint --test` for formatting. The verified environment uses PHP 8.5 CLI with `pdo_pgsql` enabled and PostgreSQL 16; do not substitute SQLite.
+
+Run `php artisan test` for the PostgreSQL-backed feature suite and `vendor/bin/pint --test` for formatting. Ensure PostgreSQL and the `pdo_pgsql` extension are available; do not substitute SQLite.
+main
 
 ## Non-blocking legal/compliance boundary
 

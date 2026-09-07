@@ -66,7 +66,11 @@ class DoctorDirectoryTest extends TestCase
         $this->actingAs($doctor)->post(route('moderation.profiles.approve', $profile))->assertForbidden();
         $this->actingAs($admin)->post(route('moderation.profiles.approve', $profile))->assertRedirect();
         $this->assertSame(DoctorProfileStatus::Approved, $profile->fresh()->status);
+codex/explain-codebase-structure-to-newcomers-rouu46
         $profile->fresh()->update(['status' => DoctorProfileStatus::Submitted]);
+
+        $profile->update(['status' => DoctorProfileStatus::Submitted]);
+main
         $this->actingAs($moderator)->post(route('moderation.profiles.reject', $profile), ['reason' => 'Needs revision'])->assertRedirect();
         $this->assertSame(DoctorProfileStatus::Rejected, $profile->fresh()->status);
         $this->actingAs($moderator)->get(route('administration'))->assertForbidden();
