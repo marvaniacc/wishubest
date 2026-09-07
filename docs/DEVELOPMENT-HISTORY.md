@@ -22,3 +22,7 @@ Resolved add/add conflicts between the merged documentation history and the corr
 ## 2026-09-06 — WishUBest foundation corrected
 
 Corrected the permanent documentation foundation after the initial generic marketplace interpretation was identified as inaccurate. The canonical product is now a multilingual, international doctor discovery, appointment booking, and medical consultation platform for video, online chat, and in-person consultations.
+
+## 2026-09-07 — Phase 1 Milestone 2 directory and publication implemented
+
+Implemented the controlled doctor directory/publication slice: Doctor and Doctor Profile ownership, controlled Specialty/Location/Medical Service references, explicit publication states, doctor-only authoring/submission, and protected administrator/moderator review decisions. Added locale-prefixed server-rendered English and Spanish doctor directory/profile pages that expose approved profiles only, retaining the required four-field discovery card. Added feature coverage for reference validation, profile ownership, moderation boundaries, public visibility, and locale routes. Scheduling, bookings, consultations, payments, verification, and provider integrations were not added.
